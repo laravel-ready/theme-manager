@@ -112,7 +112,7 @@ public function boot()
 
 Theme Manager works with `theme` and `group` pair and you can restrict with the route specific theme groups.
 
-Just pass the group alias to middleware like as `theme-manager:web` or `theme-manager:your-group`.
+Just pass the group alias to middleware like as `theme-manager:theme-group`. This option can be useful to avoid theme confusions.
 
 
 ## 🚀 Usage
