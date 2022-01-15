@@ -71,7 +71,7 @@ Or manually update `require` block of `composer.json` and run `composer update`.
 
 ### Publish configs
 
-`php artisan vendor:publish --tag=theme-manager-config`
+`php artisan vendor:publish --tag=theme-manager-config` and you can find in `config` folder.
 
 
 ### Middleware
@@ -169,7 +169,7 @@ Theme Manager, after themes scanned themes adds to cache. When you add new theme
 
 The above asset paths `css`, `js`, `html` are not reserved or any custom paths are depends to your theme `webpack.mix.js` configs and design approach.
 
-⚠️ Published theme specific assets must be in `project-folder/src/public/theme/{group-alias}/{theme-alias}/` folder because Theme Manager uses this path for directives.
+⚠️ Published theme specific assets must be in `project-folder/src/public/themes/{group-alias}/{theme-alias}/` folder because Theme Manager uses this path for directives.
 
 
 
