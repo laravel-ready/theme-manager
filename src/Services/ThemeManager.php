@@ -150,4 +150,14 @@ class ThemeManager
 
         return null;
     }
+
+    /**
+     * Rescan themes
+     *
+     * @return array
+     */
+    public function reScanThemes(bool $reScan = false): array
+    {
+        return $this->scanThemes(true);
+    }
 }

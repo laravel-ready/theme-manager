@@ -115,6 +115,27 @@ Theme Manager works with `theme` and `group` pair and you can restrict with the 
 Just pass the group alias to middleware like as `theme-manager:web` or `theme-manager:your-group`.
 
 
+## 🚀 Usage
+
+Theme loading and other options are depends to your logic. You can use in controller, middleware etc.
+
+### Scan installed themes
+
+`app('theme-manager')->scanThemes();` returns list of theme groups and their themes.
+
+Theme Manager, after themes scanned themes adds to cache. When you add new theme you should rescan the themes. Just pass `true` as parameter or use `app('theme-manager')->reScanThemes();` method.
+
+### Get current theme
+
+`app('theme-manager')->getTheme();` returns current theme details.
+
+### Get current theme
+
+`setTheme` is required two parameters. Target theme and theme group.
+
+`app('theme-manager')->setTheme('my-theme', 'theme-group')`
+
+
 ## ⚓ Blade Directives
 
 ### Asset directives
@@ -145,6 +166,7 @@ Just pass the group alias to middleware like as `theme-manager:web` or `theme-ma
 
 
 The above asset paths `css`, `js`, `html` are not reserved or any custom paths are depends to your theme `webpack.mix.js` and design approach.
+
 
 
 [badge_downloads]:      https://img.shields.io/packagist/dt/laravel-ready/theme-manager.svg?style=flat-square
