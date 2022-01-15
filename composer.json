@@ -1,0 +1,55 @@
+{
+    "name": "laravel-ready/theme-manager",
+    "description": "Theme manager for Laravel",
+    "type": "library",
+    "license": "MIT_License",
+    "keywords": [
+        "laravel",
+        "theme manager"
+    ],
+    "authors": [
+        {
+            "name": "EgoistDeveloper",
+            "email": "epsilonelittr@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/laravel-ready/theme-manager/issues",
+        "source": "https://github.com/laravel-ready/theme-manager"
+    },
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^8.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0",
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelReady\\ThemeManager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelReady\\ThemeManager\\ThemeServiceProvider"
+            ],
+            "aliases": {
+                "Theme": "LaravelReady\\ThemeManager\\Facades\\Theme"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
