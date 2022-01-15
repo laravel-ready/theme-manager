@@ -58,7 +58,7 @@ final class ThemeServiceProvider extends BaseServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/theme-manager.php' => $this->app->configPath('theme-manager.php'),
-        ], 'config');
+        ], 'theme-manager-config');
 
         $this->publishes([
             __DIR__ . '/../database/migrations/' => database_path('migrations')
