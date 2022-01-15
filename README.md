@@ -14,6 +14,40 @@ Dynamic theme manager brings theme support to Laravel projects. Theme Manager ma
 
 Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then Theme Manager can manipulate the views. Also this package uses custom Blade Compiler and if you are try to overwrite the Blade Compiler won't work anymore.
 
+### Themes folder
+
+In your root folder create `themes` folder then add your themes to own `group` folder. Also you can change `themes` folder name with package configs. Theme folder structure must be like this:
+
+
+```
+.
+└── src
+    ├── app
+    ├── public
+    ├── ...
+    ├── {themes}
+        ├── web
+        │    ├── my-awesome-theme
+        │    ├── your-awesome-theme
+        │    ├── ...
+        ├── admin
+        │    ├── banana
+        │    ├── cerry
+        │    ├── apple
+        │    ├── orange
+        │    ├── ...
+        ├── other-group
+        │    ├── other-theme
+        │    ├── other-other-theme
+        │    ├── ...
+        ├── ...
+```
+
+In this case `web`, `admin` and `other-group` is theme group. We use groups for specific purposes. Then we can add specific themes to own group folder.
+
+
+You should publish this package configs, see installation part.
+
 
 ## ⚡ Installation
 
@@ -32,6 +66,11 @@ Or manually update `require` block of `composer.json` and run `composer update`.
     }
 }
 ```
+
+### Publish configs
+
+`php artisan vendor:publish --tag=theme-manager-config`
+
 
 ### Middleware
 
