@@ -1,15 +1,26 @@
 # Laravel Theme Manager
 
-Theme manager for Laravel
+![EgoistDeveloper Laravel Theme Manager](https://preview.dragon-code.pro/EgoistDeveloper/Laravel-Theme-Manager.svg?brand=laravel)
 
 [![Stable Version][badge_stable]][link_packagist]
 [![Unstable Version][badge_unstable]][link_packagist]
 [![Total Downloads][badge_downloads]][link_packagist]
 [![License][badge_license]][link_license]
 
+
 ## Table of contents
 
-* [Installation](#installation)
+* [🔥 Concept](#🔥concept)
+* [⚡ Installation](#⚡installation)
+* [⚓ Blade Directives](#⚓-blade-directives)
+
+
+## 🔥 Concept
+
+Dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features. This package is uses custom middleware for overwriting view path with selected theme.
+
+Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then Theme Manager can manipulate the views. Also this package uses custom Blade Compiler and if you are overwrite the Blade Compiler won't work anymore.
+
 
 ## ⚡ Installation
 
@@ -31,7 +42,39 @@ Or manually update `require` block of `composer.json` and run `composer update`.
 
 ### Middleware
 
-Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then Theme Manager can manipulate the views. Also this package uses custom Blade Compiler and if you are overwrite the Blade Compiler might not work anymore.
+Add `theme-manager` to your base route in *{route}.php* or `app/Providers/RouteServiceProvider.php`
+
+#### in routes/web.php
+
+```php
+Route::prefix('/')->middleware(['theme-manager', 'another-mw'])->group(function (){
+    Route::get('', [LandingController::class, 'index'])->name('home');
+
+    Route::get('my-page', [LandingController::class, 'anyPage'])->name('my-page');
+});
+```
+
+#### in RouteServiceProvider.php
+
+```php
+public function boot()
+{
+    $this->configureRateLimiting();
+
+    $this->routes(function () {
+        ...
+
+        Route::middleware(['web', 'theme-manager'])
+            ->namespace("{$this->namespace}\\Web")
+            ->group(base_path('routes/web.php'));
+
+        Route::middleware(['web', 'theme-manager'])
+            ->namespace("{$this->namespace}\\Admin")
+            ->group(base_path('routes/admin.php'));
+
+    });
+}
+```
 
 
 ## ⚓ Blade Directives
