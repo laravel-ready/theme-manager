@@ -16,7 +16,9 @@ Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then
 
 ### Themes folder
 
-In your root folder create `themes` folder then add your themes to own `group` folder. Also you can change `themes` folder name with package configs. Theme folder structure must be like this:
+In your root folder create `themes` folder then add your themes to own `group` folder. Also you can change `themes` folder name with package configs.
+
+Theme folder structure must be like this:
 
 
 ```
@@ -165,7 +167,9 @@ Theme Manager, after themes scanned themes adds to cache. When you add new theme
   - `@svg('chevron-down', 'mx-auto', 'fill: green; top: 20px; position: relative;')`
 
 
-The above asset paths `css`, `js`, `html` are not reserved or any custom paths are depends to your theme `webpack.mix.js` and design approach.
+The above asset paths `css`, `js`, `html` are not reserved or any custom paths are depends to your theme `webpack.mix.js` configs and design approach.
+
+⚠️ Published theme specific assets must be in `project-folder/src/public/theme/{group-alias}/{theme-alias}/` folder because Theme Manager uses this path for directives.
 
 
 
