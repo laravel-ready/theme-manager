@@ -10,7 +10,7 @@ Theme manager for Laravel
 ## Table of contents
 
 * [Installation](#installation)
-*
+
 ## ⚡ Installation
 
 To get the latest version of `Laravel Theme Manager`, simply require the project using [Composer](https://getcomposer.org):
@@ -41,7 +41,7 @@ Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then
 | Directive | Description | Parameters |
 | --------- | ----------- | ---------- |
 | **@asset**     | Get theme asset URL | `0`: Asset path, `1`: Print theme version number (default `true`) |
-| **@assetLoa**d | Get theme asset content as string | `0`: Asset path, `1`: Fallback asset (default `null`) |
+| **@assetLoad** | Get theme asset content as string | `0`: Asset path, `1`: Fallback asset (default `null`) |
 | **@svg**       | Get SVG content as string    | `0`: SVG file name, `1`: Class name (default `null`), `2`: CSS style (default `null`) |
 
 
