@@ -8,6 +8,6 @@ class ThemeManager extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'theme';
+        return 'theme-manager';
     }
 }

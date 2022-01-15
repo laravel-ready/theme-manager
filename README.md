@@ -137,6 +137,10 @@ Theme Manager, after themes scanned themes adds to cache. When you add new theme
 
 `app('theme-manager')->setTheme('my-theme', 'theme-group')`
 
+### Using directly service
+
+Add `use LaravelReady\ThemeManager\Services\ThemeManager;` namespace then call same methods `$themeManager->...()`.
+
 
 ## ⚓ Blade Directives
 

@@ -46,7 +46,7 @@
                 "LaravelReady\\ThemeManager\\ThemeServiceProvider"
             ],
             "aliases": {
-                "Theme": "LaravelReady\\ThemeManager\\Facades\\Theme"
+                "ThemeManager": "LaravelReady\\ThemeManager\\Facades\\ThemeManager"
             }
         }
     },
