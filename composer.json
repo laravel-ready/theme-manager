@@ -2,7 +2,7 @@
     "name": "laravel-ready/theme-manager",
     "description": "Theme manager for Laravel",
     "type": "library",
-    "license": "MIT License",
+    "license": "MIT",
     "keywords": [
         "laravel",
         "theme manager"
