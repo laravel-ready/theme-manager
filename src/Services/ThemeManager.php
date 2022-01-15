@@ -75,7 +75,7 @@ class ThemeManager
                 });
             }
 
-            throw new ThemeManagerException("Requested theme group: '{$group}' not found.");
+            throw new ThemeManagerException("Requested theme group: \"{$group}\" not found.");
         }
 
         return null;

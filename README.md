@@ -8,18 +8,11 @@
 [![License][badge_license]][link_license]
 
 
-## Table of contents
-
-* [🔥 Concept](#🔥concept)
-* [⚡ Installation](#⚡installation)
-* [⚓ Blade Directives](#⚓-blade-directives)
-
-
 ## 🔥 Concept
 
 Dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features. This package is uses custom middleware for overwriting view path with selected theme.
 
-Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then Theme Manager can manipulate the views. Also this package uses custom Blade Compiler and if you are overwrite the Blade Compiler won't work anymore.
+Add `theme-manager` middleware alias to your `web` or `custom` route chain. Then Theme Manager can manipulate the views. Also this package uses custom Blade Compiler and if you are try to overwrite the Blade Compiler won't work anymore.
 
 
 ## ⚡ Installation
@@ -44,7 +37,7 @@ Or manually update `require` block of `composer.json` and run `composer update`.
 
 Add `theme-manager` to your base route in *{route}.php* or `app/Providers/RouteServiceProvider.php`
 
-#### in routes/web.php
+#### in *routes/web.php*
 
 ```php
 Route::prefix('/')->middleware(['theme-manager', 'another-mw'])->group(function (){
@@ -54,7 +47,7 @@ Route::prefix('/')->middleware(['theme-manager', 'another-mw'])->group(function 
 });
 ```
 
-#### in RouteServiceProvider.php
+#### in *RouteServiceProvider.php*
 
 ```php
 public function boot()
@@ -75,6 +68,12 @@ public function boot()
     });
 }
 ```
+
+#### *Theme groups* in middleware
+
+Theme Manager works with `theme` and `group` pair and you can restrict with the route specific theme groups.
+
+Just pass the group alias to middleware like as `theme-manager:web` or `theme-manager:your-group`.
 
 
 ## ⚓ Blade Directives
