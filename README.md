@@ -129,15 +129,19 @@ Theme Manager, after themes scanned themes adds to cache. When you add new theme
 
 ### Get current theme
 
-`app('theme-manager')->getTheme();` returns current theme details.
+`app('theme-manager')->getCurrentTheme();` returns current theme details.
 
-### Get current theme
+### Get target theme
+
+`app('theme-manager')->getTheme();` returns requested theme details.
+
+### Set current theme
 
 `setTheme` is required two parameters. Target theme and theme group.
 
 `app('theme-manager')->setTheme('my-theme', 'theme-group')`
 
-### Using directly service
+### Using directly ThemeManager service
 
 Add `use LaravelReady\ThemeManager\Services\ThemeManager;` namespace then call same methods `$themeManager->...()`.
 
