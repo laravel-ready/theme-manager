@@ -124,6 +124,8 @@ class ThemeManager
                                 $themeConfigs->path = $themePath;
                                 $themeConfigs->views = "{$themePath}/views";
 
+                                $themeConfigs->preview = null;
+
                                 if (File::exists("{$themePath}/preview.png")){
                                     $themeConfigs->preview = "{$themePath}/preview.png";
                                 } else if (File::exists("{$themePath}/preview.jpg")){
@@ -132,6 +134,8 @@ class ThemeManager
 
                                 if ($themeConfigs->preview) {
                                     $themeConfigs->preview = base64_encode(File::get($themeConfigs->preview));
+                                } else {
+                                    $themeConfigs->preview_default = base64_encode(File::get(__DIR__ . '/../../resources/images/preview-default.jpg'));
                                 }
 
                                 $themeList[$themeGroup->getFilename()][] = $themeConfigs;
