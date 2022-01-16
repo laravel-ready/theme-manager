@@ -53,6 +53,8 @@ You should publish this package configs, see installation part.
 
 ## ⚡ Installation
 
+⚠️ This package compatible only Laravel 8 and above.
+
 To get the latest version of `Laravel Theme Manager`, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
