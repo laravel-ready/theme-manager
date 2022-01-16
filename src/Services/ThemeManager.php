@@ -82,6 +82,16 @@ class ThemeManager
     }
 
     /**
+     * Get current theme
+     *
+     * @return mixed
+     */
+    public function getCurrentTheme(): mixed
+    {
+        return Config::get('theme-manager.current_theme');
+    }
+
+    /**
      * Scan installed themes
      *
      * @param bool $reScan
