@@ -35,11 +35,8 @@ class ThemeManagerMiddleware
             $currentTheme = Config::get('theme-manager.current_theme');
 
             if ($currentTheme) {
-                // restrict route with selected group
                 if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
-                    throw new ThemeManagerException("Requested theme group and target theme group are not match.
-                        Please use same theme group with middleware.
-                        Required group: \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
+                    throw new ThemeManagerException("This route resticted only theme group: \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
                 }
 
                 View::addNamespace('theme', $currentTheme->views);
