@@ -11,14 +11,14 @@ use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 class ThemeManager
 {
     /**
-     * Get asset public url
+     * Get asset public static url
      *
      * @param string $asset asset relative path
      * @param object $theme current theme
      *
      * @return string
      */
-    public function assetUrl(string $asset, object $theme): string
+    public static function assetUrl(string $asset, object $theme): string
     {
         $asset = trim($asset, '/');
 
@@ -33,7 +33,7 @@ class ThemeManager
      *
      * @return string
      */
-    public function assetPath(string $asset, object $theme): string
+    public static function assetPath(string $asset, object $theme): string
     {
         $asset = trim($asset, '/');
 
@@ -46,9 +46,9 @@ class ThemeManager
      * @param string $themeAlias
      * @param string $group
      */
-    public function setTheme(string $themeAlias, string $group = 'web'): mixed
+    public static function setTheme(string $themeAlias, string $group = 'web'): mixed
     {
-        $theme = $this->getTheme($themeAlias, $group);
+        $theme = self::getTheme($themeAlias, $group);
 
         Config::set('theme-manager.active_theme_alias', $themeAlias);
         Config::set('theme-manager.current_theme', $theme);
@@ -66,7 +66,7 @@ class ThemeManager
      *
      * @return mixed
      */
-    public function getTheme(string $themeAlias, string $group = 'web'): mixed
+    public static function getTheme(string $themeAlias, string $group = 'web'): mixed
     {
         $cacheKey = 'theme-manager.themes';
         $themes = Cache::get($cacheKey);
@@ -90,7 +90,7 @@ class ThemeManager
      *
      * @return mixed
      */
-    public function getCurrentTheme(): mixed
+    public static function getCurrentTheme(): mixed
     {
         return Config::get('theme-manager.current_theme');
     }
@@ -102,7 +102,7 @@ class ThemeManager
      *
      * @return array
      */
-    public function scanThemes(bool $reScan = false): array
+    public static function scanThemes(bool $reScan = false): array
     {
         $cacheKey = 'theme-manager.themes';
 
@@ -174,8 +174,8 @@ class ThemeManager
      *
      * @return array
      */
-    public function reScanThemes(bool $reScan = false): array
+    public static function reScanThemes(bool $reScan = false): array
     {
-        return $this->scanThemes(true);
+        return self::scanThemes(true);
     }
 }
