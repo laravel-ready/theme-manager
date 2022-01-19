@@ -50,7 +50,6 @@ class ThemeManager
     {
         $theme = self::getTheme($themeAlias, $group);
 
-        Config::set('theme-manager.active_theme_alias', $themeAlias);
         Config::set('theme-manager.current_theme', $theme);
 
         return $theme;
@@ -177,5 +176,17 @@ class ThemeManager
     public static function reScanThemes(bool $reScan = false): array
     {
         return self::scanThemes(true);
+    }
+
+    /**
+     * Set default theme
+     *
+     * @param string $themeAlias
+     * @param string $group
+     */
+    public static function setDefaultTheme(string $themeAlias, string $group): void
+    {
+        Config::set('theme-manager.default_theme', $themeAlias);
+        Config::set('theme-manager.default_group', $group);
     }
 }

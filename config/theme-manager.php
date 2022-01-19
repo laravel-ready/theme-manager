@@ -3,9 +3,20 @@
 return [
 
     /**
-     * Current theme name
+     * Default theme alias
+     *
+     * When target theme is not found loads default theme
+     *
+     * If value is null throws exception eventually
      */
-    'active_theme_alias' => null,
+    'default_theme' => null,
+
+    /**
+     * Default group alias
+     *
+     * Required with "default_theme"
+     */
+    'default_group' => null,
 
     /**
      * Themes root folder required for loading blade views etc.

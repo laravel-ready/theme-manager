@@ -439,6 +439,17 @@ public function boot()
 
                             <code>ThemeManager::setTheme('my-theme', 'theme-group')</code>
                         </p>
+
+                        <h4>
+                            Set default theme
+                        </h4>
+
+                        <p>
+                            <code>setDefaultTheme</code> is required two parameters. Target theme and theme group.
+                            When target theme is not found loads default theme. If value is null throws exception eventually.
+
+                            <code>ThemeManager::setDefaultTheme('default-theme', 'default-group')</code>
+                        </p>
                     </section>
 
                     <hr class="divider">
