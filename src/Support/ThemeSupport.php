@@ -34,4 +34,30 @@ class ThemeSupport
             (isset($args[$index]) && $args[$index] === 'true') ||
             (isset($args[$index]) && $args[$index] !== 'false');
     }
+
+    /**
+     * Hand mixed arguments
+     *
+     * @param string $arg1
+     * @param string $arg2
+     * @param string $arg3
+     */
+    public static function handleArguments(string $arg1 = null, string $arg2 = null, string $arg3 = null)
+    {
+        $args = [];
+
+        for ($i = 1; $i < 4; $i++) {
+            $varName = "arg{$i}";
+
+            if ($$varName) {
+                $parameters = explode('=', $$varName);
+
+                if (count($parameters) == 2) {
+                    $args[trim($parameters[0])] = trim($parameters[1]);
+                }
+            }
+        }
+
+        return $args;
+    }
 }

@@ -10,39 +10,43 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
+use LaravelReady\ThemeManager\Support\ThemeSupport;
+use LaravelReady\ThemeManager\Services\ThemeManager;
 
 class ThemeManagerMiddleware
 {
-    public function handle(Request $request, Closure $next, string $themeGroup = null)
+    public function handle(Request $request, Closure $next, string $arg1 = null, string $arg2 = null, string $arg3 = null)
     {
-        $themeAlias = Config::get('theme-manager.active_theme_alias');
-
-        if ($themeAlias) {
             $cacheKey = 'theme-manager.themes';
 
             if (!Cache::has($cacheKey) || !Cache::get($cacheKey)) {
-                app('theme-manager')->scanThemes(true);
+                ThemeManager::scanThemes(true);
             }
 
-            $theme = Config::get('theme-manager.current_theme');
+            $args = ThemeSupport::handleArguments($arg1, $arg2, $arg3);
+            $theme = $args['theme'] ?? null;
+            $group = $args['group'] ?? null;
+            $restrictGroup = $args['restrict_group'] ?? null;
 
-            if ($theme) {
-                if ($themeGroup && $theme->group !== trim($themeGroup)){
+            if ($theme && $group) {
+                $currentTheme = ThemeManager::setTheme($theme, $group);
+            }
+
+            $currentTheme = Config::get('theme-manager.current_theme');
+
+            if ($currentTheme) {
+                // restrict route with selected group
+                if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
                     throw new ThemeManagerException("Requested theme group and target theme group are not match.
                         Please use same theme group with middleware.
-                        Required group: \"{$themeGroup}\", provided group: \"{$theme->group}\"");
+                        Required group: \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
                 }
 
-                if (file_exists($theme->views)) {
-                    View::addNamespace('theme', $theme->views);
+                View::addNamespace('theme', $currentTheme->views);
 
-                    return $next($request);
-                }
+                return $next($request);
             }
 
-            throw new ThemeManagerException("Requested theme \"{$themeAlias}\" could not found.");
-        }
-
-        throw new ThemeManagerException('Theme is not provided.');
+            throw new ThemeManagerException("Requested theme \"{$group}:{$theme}\" could not found.");
     }
 }

@@ -46,10 +46,14 @@ class ThemeManager
      * @param string $themeAlias
      * @param string $group
      */
-    public function setTheme(string $themeAlias, string $group = 'web'): void
+    public function setTheme(string $themeAlias, string $group = 'web'): mixed
     {
+        $theme = $this->getTheme($themeAlias, $group);
+
         Config::set('theme-manager.active_theme_alias', $themeAlias);
-        Config::set('theme-manager.current_theme', $this->getTheme($themeAlias, $group));
+        Config::set('theme-manager.current_theme', $theme);
+
+        return $theme;
     }
 
     /**
