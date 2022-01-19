@@ -22,7 +22,9 @@ class ThemeManager
     {
         $asset = trim($asset, '/');
 
-        return app('url')->asset("/themes/{$theme->group}/{$theme->alias}/{$asset}");
+        $themesRootFolder = Config::get('theme-manager.themes_root_folder');
+
+        return app('url')->asset("/{$themesRootFolder}/{$theme->group}/{$theme->alias}/{$asset}");
     }
 
     /**
@@ -37,7 +39,9 @@ class ThemeManager
     {
         $asset = trim($asset, '/');
 
-        return base_path() . "/public/themes/{$theme->group}/{$theme->alias}/{$asset}";
+        $themesRootFolder = Config::get('theme-manager.themes_root_folder');
+
+        return base_path() . "/public/{$themesRootFolder}/{$theme->group}/{$theme->alias}/{$asset}";
     }
 
     /**
@@ -139,9 +143,9 @@ class ThemeManager
 
                                 $themeConfigs->preview = null;
 
-                                if (File::exists("{$themePath}/preview.png")){
+                                if (File::exists("{$themePath}/preview.png")) {
                                     $themeConfigs->preview = "{$themePath}/preview.png";
-                                } else if (File::exists("{$themePath}/preview.jpg")){
+                                } else if (File::exists("{$themePath}/preview.jpg")) {
                                     $themeConfigs->preview = "{$themePath}/preview.jpg";
                                 }
 
