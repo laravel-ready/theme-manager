@@ -114,10 +114,17 @@ public function boot()
 
 #### *Theme groups* in middleware
 
-Theme Manager works with `theme` and `group` pair and you can restrict with the route specific theme groups.
+Theme Manager works with `theme` and `group` pair and also you can restrict with the route specific theme groups.
 
-Just pass the group alias to middleware like as `theme-manager:theme-group`. This option can be useful to avoid theme confusions.
+| Parameter | Description | Usage |
+| --------- | ----------- | ---------- |
+| **theme** | Specify theme alias | `theme-manager:theme=my-theme` |
+| **group** | Specify group alias | `theme-manager:group=admin` |
+| **restrict_group** | Restrict route with target group | `theme-manager:restrict_group=admin` |
 
+Combined usage: `theme-manager:theme=my-theme, group=admin, restrict_group=admin`
+
+⚠️ Parameter ordering does not matter.
 
 ## 🚀 Usage
 
@@ -147,6 +154,13 @@ Theme Manager, after themes scanned themes adds to cache. When you add new theme
 
 Add `use LaravelReady\ThemeManager\Services\ThemeManager;` namespace then call same methods `$themeManager->...()`.
 
+### Calling theme views
+
+We can call regular views with `return View('welcome')`. If you want to call the theme view use `theme::` alias like `return View('theme::welcome')`.
+
+`theme::` alias is universal gateway for Theme Manager. After you use `setTheme` method Theme Manager finds theme views then renders.
+
+Also you  can't use like `theme::theme-name...`. You can only define themes with `ThemeManager` service class and middleware.
 
 ## ⚓ Blade Directives
 
