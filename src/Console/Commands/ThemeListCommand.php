@@ -45,6 +45,7 @@ class ThemeListCommand extends Command
         if ($themes) {
             $headers = [
                 'Index',
+                'Default',
                 'Name',
                 'Alias',
                 'Group',
@@ -80,7 +81,8 @@ class ThemeListCommand extends Command
 
                     $themeList[] = [
                         'Index' => " [{$index}]",
-                        'Name' => $theme->name . ($isDefaultTheme ? ' (Default)' : ''),
+                        'Default' => $isDefaultTheme ? 'Yes' : '-',
+                        'Name' => $theme->name,
                         'Alias' => $theme->alias,
                         'Group' => $group,
                         'Description' => Str::limit($theme->description, 30, '...'),
