@@ -268,4 +268,25 @@ class ThemeManager
             'message' => 'Theme folder not found. Please try again.'
         ];
     }
+
+    /**
+     * Delete selected theme
+     *
+     * @param string $theme
+     * @param string $group
+     *
+     * @param bool
+     */
+    public static function deleteTheme(string $theme, string $group)
+    {
+        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
+
+        $themeFolder = "{$themesFolder}/{$group}/{$theme}";
+
+        if (File::exists($themeFolder)) {
+            return File::deleteDirectory($themeFolder);
+        }
+
+        return false;
+    }
 }

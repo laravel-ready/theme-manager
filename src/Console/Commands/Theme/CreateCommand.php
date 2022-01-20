@@ -47,8 +47,6 @@ class CreateCommand extends Command
      */
     public function handle()
     {
-        $this->info('Theme Manager - Create New Theme');
-
         $this->askThemeName();
 
         $this->askDescription();

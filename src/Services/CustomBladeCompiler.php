@@ -12,7 +12,7 @@ class CustomBladeCompiler extends BladeCompiler
      *
      * This overwrite process is required for disabling view caching
      *
-     * @param  string  $path
+     * @param string $path
      *
      * @return bool
      */
