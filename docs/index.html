@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" />
 
     <!-- Highlight Syntax -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/stackoverflow-dark.min.css" />
 
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
@@ -125,6 +125,16 @@
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_service">Service</a></li>
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_views">Views</a></li>
                             <li class="nav-item"><a class="nav-link" href="#idocs_usage_directives">Directives</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#idocs_usage_default_theme">Default Theme</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#idocs_theme">✳️ Theme</a>
+
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link" href="#idocs_theme_commands">Commands</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#idocs_theme_folder_structure">Folder Structure</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -134,66 +144,21 @@
             <div class="idocs-content">
                 <div class="container">
 
-                    <!-- Getting Started -->
+                    <!-- ~~~~ Getting Started ~~~~ -->
                     <section id="idocs_start">
                         <h2>
                             🔥 Concept
                         </h2>
 
                         <p class="lead">
-                            This dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't
-                            lose build-in Laravel features. This package uses custom middleware for overwriting view path with selected theme.
+                            This <b>dynamic</b> theme manager brings theme support to Laravel projects.
+                            Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features.
+                            This package uses custom middleware for overwriting view path with selected theme.
                         </p>
 
                         <p class="lead">
-                            Add <code>theme-manager</code> middleware alias to your <code>web</code> or <code>custom</code> route chain. Then Theme Manager can
-                            manipulate the views.
-
-                            Also this package uses custom Blade Compiler and if you are try to overwrite the Blade Compiler won't work anymore.
-                        </p>
-
-                        <h4 class="mt-5">
-                            Themes folder
-                        </h4>
-
-                        <p>
-                            In your root folder create <code>themes</code> folder then add your themes to own <code>group</code> folder.
-                            Also you can change <code>themes</code> folder path with package configs (<i>must be in root folder</i>).
-
-                            Theme folder structure must be like this:
-                        </p>
-
-                        <pre>
-                            <code>
-.
-└── src
-    ├── app
-    ├── public
-    ├── ...
-    ├── {themes}
-        ├── web
-        │    ├── my-awesome-theme
-        │    ├── your-awesome-theme
-        │    ├── ...
-        ├── admin
-        │    ├── banana
-        │    ├── cerry
-        │    ├── apple
-        │    ├── orange
-        │    ├── ...
-        ├── other-group
-        │    ├── other-theme
-        │    ├── other-other-theme
-        │    ├── ...
-        ├── ...
-                            </code>
-                        </pre>
-
-                        <p>
-                            In this case <code>web</code>, <code>admin</code> and <code>other-group</code> is theme group.
-                            We use groups for specific purposes. Then we can add specific themes to own group folder.
-
-                            You should publish this package configs, see installation part.
+                            Add <code>theme-manager</code> middleware alias to your <code>web</code> or <code>custom</code> route chain.
+                            Then Theme Manager can manipulate the views.
                         </p>
                     </section>
 
@@ -219,7 +184,7 @@
 
                         <p>
                             <code>
-                                composer require laravel-ready/theme-manager
+                                > composer require laravel-ready/theme-manager
                             </code>
                         </p>
 
@@ -227,8 +192,18 @@
                             Publish configs
                         </h4>
 
+                        <p class="mb-0">
+                            Run artisan command:
+                        </p>
+
+                        <pre class="mb-0">
+                            <code class="bash py-0">
+$ php artisan vendor:publish --tag=theme-manager-config
+                            </code>
+                        </pre>
+
                         <p>
-                            <code>php artisan vendor:publish --tag=theme-manager-config</code> and you can find in <code>config</code> folder.
+                             and you can find <code>theme-manager.php</code> file in <code>config</code> folder.
                         </p>
 
                         <h4>
@@ -236,11 +211,11 @@
                         </h4>
 
                         <p class="mb-4">
-                            Add <code>theme-manager</code> to your base route in <i>{route}.php</i> or <code>app/Providers/RouteServiceProvider.php</code>
+                            Add <code>theme-manager</code> middleware alias to your base route in <i>{route}.php</i> or <code>app/Providers/RouteServiceProvider.php</code>
                         </p>
 
                         <h5 class="m-0">
-                            First way <i>routes/web.php</i>
+                            First way routes/{web}.php
                         </h5>
 
                         <pre class="mb-0">
@@ -254,7 +229,7 @@ Route::prefix('/')->middleware(['theme-manager', 'another-mw'])->group(function 
                         </pre>
 
                         <h5 class="m-0">
-                            Second way <i>RouteServiceProvider.php</i>
+                            Second way RouteServiceProvider.php
                         </h5>
 
                         <pre class="mb-0">
@@ -282,14 +257,14 @@ public function boot()
 
                     <hr class="divider mt-0">
 
-                    <!-- Usage -->
+                    <!-- ~~~~ Usage ~~~~ -->
                     <section id="idocs_usage">
                         <h2>
                             🚀 Usage
                         </h2>
 
                         <p class="lead mb-5">
-                            Documentation and examples for header, navbar, sidebar, footer
+                            <!-- To be filled -->
                         </p>
                     </section>
 
@@ -386,7 +361,9 @@ public function boot()
                         </p>
 
                         <p>
-                            Theme manager requires theme and group values always.
+                            If you want to add a theme you must add group alias because all themes depends to own group.
+                            Also to use multiple default theme you first must define group.
+                            See multiple and default theme sections for more example.
                         </p>
                     </section>
 
@@ -439,17 +416,6 @@ public function boot()
 
                             <code>ThemeManager::setTheme('my-theme', 'theme-group')</code>
                         </p>
-
-                        <h4>
-                            Set default theme
-                        </h4>
-
-                        <p>
-                            <code>setDefaultTheme</code> is required two parameters. Target theme and theme group.
-                            When target theme is not found loads default theme. If value is null throws exception eventually.
-
-                            <code>ThemeManager::setDefaultTheme('default-theme', 'default-group')</code>
-                        </p>
                     </section>
 
                     <hr class="divider">
@@ -470,6 +436,31 @@ public function boot()
                             Also you  can't use like <code>theme::theme-name...</code>.
                             You can only define themes with <code>ThemeManager</code> service class and middleware.
                         </p>
+
+                        <pre>
+                            <code class="php">
+class AnyController extends Controller
+{
+    public function __construct() {
+        ThemeManager::addDefaultTheme(['web:red-swan', 'admin:admin-who']);
+
+        $theme = request()->query('theme', 'green-energy');
+
+        ThemeManager::setTheme($theme, 'web');
+    }
+
+    public function index(){
+        return View('web.welcome');
+    }
+
+    public function anyPage(){
+        ...
+
+        return View('theme::pages.any-page');
+    }
+}
+                            </code>
+                        </pre>
                     </section>
 
                     <hr class="divider">
@@ -597,6 +588,174 @@ public function boot()
                             <code>project-folder/src/public/themes/{group-alias}/{theme-alias}/</code> folder because
                             Theme Manager uses this path for directives.
                         </p>
+                    </section>
+
+                    <hr class="divider">
+
+                    <!-- Default Theme -->
+                    <section id="idocs_usage_default_theme">
+                        <h3 class="mb-2">
+                            Default Theme
+                        </h3>
+
+                        <p class="mb-5">
+                            We can define default themes with config file and service class.
+                        </p>
+
+                        <h4>
+                            Config file
+                        </h4>
+
+                        <p>
+                            Open <code>theme-manager.php</code> file then set <code>default_theme</code> value.
+                            <code>default_theme</code> supports single and multiple themes.
+                        </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+&lt;?php
+
+return [
+    ...
+
+    'default_theme' => 'web:red-swan',
+
+    ...
+];
+                            </code>
+                        </pre>
+
+                        <p>
+                            or in array
+                        </p>
+
+                        <pre class="mb-0">
+                            <code class="php py-0">
+&lt;?php
+
+return [
+    ...
+
+    'default_theme' => [
+        'web:red-swan',
+        'admin:admin-who'
+    ],
+
+    ...
+];
+                            </code>
+                        </pre>
+
+                        <h4>
+                            Service class
+                        </h4>
+
+                        ...
+                    </section>
+
+                    <hr class="divider">
+
+                    <!-- ~~~~ Theme ~~~~ -->
+                    <section id="idocs_theme">
+                        <h2 class="mb-2">
+                            ✳️ Theme
+                        </h2>
+
+                        <p class="lead">
+
+                        </p>
+                    </section>
+
+                    <hr class="divider">
+
+                    <!-- Folder Structure -->
+                    <section id="idocs_theme_folder_structure">
+                        <h4 class="mt-5">
+                            Folder Structure
+                        </h4>
+
+                        <p>
+                            In your root folder create <code>themes</code> folder then add your themes to own <code>group</code> folder.
+                            Also you can change <code>themes</code> folder path with package configs (<i>must be in root folder</i>).
+
+                            Theme folder structure must be like this:
+                        </p>
+
+                        <pre>
+                            <code class="yaml">
+.
+└── src
+    ├── app
+    ├── public
+    ├── ...
+    ├── {themes}
+        ├── web
+        │    ├── my-awesome-theme
+        │    ├── your-awesome-theme
+        │    ├── ...
+        ├── admin
+        │    ├── banana
+        │    ├── cerry
+        │    ├── apple
+        │    ├── orange
+        │    ├── ...
+        ├── other-group
+        │    ├── other-theme
+        │    ├── other-other-theme
+        │    ├── ...
+        ├── ...
+                            </code>
+                        </pre>
+
+                        <p>
+                            In this case <code>web</code>, <code>admin</code> and <code>other-group</code> is theme group.
+                            We use groups for specific purposes. Then we can add specific themes to own group folder.
+
+                            You should publish this package configs, see installation part.
+                        </p>
+                    </section>
+
+                    <!-- Commands -->
+                    <section id="idocs_theme_commands">
+                        <h3 class="mb-2">
+                            Commands
+                        </h3>
+
+                        <p>
+                            You can manage themes with commands.
+                        </p>
+
+                        <h5>
+                            List installed themes
+                        </h5>
+
+                        <p>
+                            <code>> php artisan theme-manager:list</code>
+                        </p>
+
+
+                        <p>
+                            <b>
+                                Result:
+                            </b>
+                        </p>
+
+                        <pre>
+                            <code class="yaml py-0">
+⚠️  Check the "theme-config.json" file in the own theme folder for more information.
+
++-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
+| Index | Default | Name         | Alias        | Group | Description                       | Authors         | Version |
++-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
+|  [1]  | Yes     | Admin Who?   | admin-who    | admin | Dolore officia adipisicing ven... | EgoistDeveloper | 0.0.0   |
+|  [2]  | -       | Gentelella   | gentelella   | admin | Gentelella Admin is a free to...  | EgoistDeveloper | 3.1.3   |
+|  [3]  | -       | Dark Night   | dark-night   | web   | Find the perfect lights in dar... | EgoistDeveloper | 1.1.3   |
+|  [4]  | -       | Green Energy | green-energy | web   | Green energy is any energy typ... | EgoistDeveloper | 4.1.3   |
+|  [5]  | Yes     | Red Swan     | red-swan     | web   | The awesome red swan web site...  | EgoistDeveloper | 1.0.1   |
++-------+---------+--------------+--------------+-------+-----------------------------------+-----------------+---------+
+                            </code>
+                        </pre>
+
                     </section>
                 </div>
             </div>
