@@ -1,13 +1,13 @@
 <?php
 
-namespace LaravelReady\ThemeManager\Console\Commands;
+namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
-class ThemeListCommand extends Command
+class ListCommand extends Command
 {
     /**
      * The name and signature of the console command.

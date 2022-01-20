@@ -2,6 +2,8 @@
 
 namespace LaravelReady\ThemeManager\Support;
 
+use Illuminate\Support\Facades\Validator;
+
 class ThemeSupport
 {
     /**

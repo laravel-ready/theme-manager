@@ -15,7 +15,8 @@ use LaravelReady\ThemeManager\Services\ThemeManager;
 use LaravelReady\ThemeManager\Directives\AssetDirectives;
 use LaravelReady\ThemeManager\Services\CustomBladeCompiler;
 use LaravelReady\ThemeManager\Http\Middleware\ThemeManagerMiddleware;
-use LaravelReady\ThemeManager\Console\Commands\ThemeListCommand;
+use LaravelReady\ThemeManager\Console\Commands\Theme\ListCommand;
+use LaravelReady\ThemeManager\Console\Commands\Theme\CreateCommand;
 
 final class ThemeServiceProvider extends BaseServiceProvider
 {
@@ -122,7 +123,8 @@ final class ThemeServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                ThemeListCommand::class,
+                ListCommand::class,
+                CreateCommand::class
             ]);
         }
     }

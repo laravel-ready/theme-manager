@@ -5,7 +5,7 @@ namespace LaravelReady\ThemeManager\Services;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-
+use Illuminate\Validation\Rules\Exists;
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
 class ThemeManager
@@ -216,5 +216,56 @@ class ThemeManager
     public static function getDefaultTheme(): mixed
     {
         return Config::get('theme-manager.default_theme');
+    }
+
+    /**
+     * Create new theme
+     *
+     * @param array $themeConfigs
+     *
+     * @return array
+     */
+    public static function createTheme(array $themeConfigs): array
+    {
+        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
+
+        $themeFolder = "{$themesFolder}/{$themeConfigs['group']}/{$themeConfigs['alias']}";
+        $themeTemplateFolder = __DIR__ . '/./../../resources/theme-template';
+
+        if (!File::exists($themeFolder)) {
+            File::makeDirectory($themeFolder, 0755, true);
+        } else {
+            return [
+                'result' => false,
+                'message' => "Theme folder already exists: {$themeConfigs['group']}:{$themeConfigs['alias']}"
+            ];
+        }
+
+        if (File::exists($themeFolder)) {
+            $isCopied = File::copyDirectory($themeTemplateFolder, $themeFolder);
+
+            if ($isCopied) {
+                $themeConfigFile = json_encode($themeConfigs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                $result = File::put("{$themeFolder}/theme-configs.json", $themeConfigFile);
+
+                if (!$result) {
+                    return [
+                        'result' => false,
+                        'message' => 'Theme configs could not created.'
+                    ];
+                }
+            }
+
+            return [
+                'result' => true,
+                'message' => 'Theme created successfully'
+            ];
+        }
+
+        return [
+            'result' => false,
+            'message' => 'Theme folder not found. Please try again.'
+        ];
     }
 }
