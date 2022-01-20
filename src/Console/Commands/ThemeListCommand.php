@@ -56,21 +56,30 @@ class ThemeListCommand extends Command
             $themeList = [];
             $index = 0;
 
+            $defaultTheme = Config::get('theme-manager.default_theme');
+
             foreach ($themes as $group => $themes) {
                 foreach ($themes as $theme) {
+                    ++$index;
+
                     $authors = array_map(function ($author) {
                         return $author->name;
                     }, $theme->authors);
 
                     $authors = implode(', ', $authors);
 
-                    $defaultTheme = Config::get('theme-manager.default_theme');
-                    $defaultGroup = Config::get('theme-manager.default_group');
+                    $isDefaultTheme = false;
 
-                    $isDefaultTheme = $group == $defaultGroup && $theme->alias == $defaultTheme;
+                    if ($defaultTheme) {
+                        if (is_string($defaultTheme)) {
+                            $isDefaultTheme = $defaultTheme == "{$group}:{$theme->alias}";
+                        } else if (is_array($defaultTheme)) {
+                            $isDefaultTheme = in_array("{$group}:{$theme->alias}", $defaultTheme);
+                        }
+                    }
 
                     $themeList[] = [
-                        'Index' => ' [' . ++$index . ']',
+                        'Index' => " [{$index}]",
                         'Name' => $theme->name . ($isDefaultTheme ? ' (Default)' : ''),
                         'Alias' => $theme->alias,
                         'Group' => $group,

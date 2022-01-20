@@ -177,20 +177,35 @@ class ThemeManager
      *
      * @return array
      */
-    public static function reScanThemes(bool $reScan = false): array
+    public static function reScanThemes(): array
     {
         return self::scanThemes(true);
     }
 
     /**
-     * Set default theme
+     * Set default theme and group
      *
-     * @param string $themeAlias
-     * @param string $group
+     * @param string|array $theme
+     * @param string|array $group
      */
-    public static function setDefaultTheme(string $themeAlias, string $group): void
+    public static function addDefaultTheme(string|array $groupThemePair): void
     {
-        Config::set('theme-manager.default_theme', $themeAlias);
-        Config::set('theme-manager.default_group', $group);
+        $cacheKey = 'theme-manager.preconfigs';
+
+        $preConfigCache = Cache::get($cacheKey) ?? [];
+
+        $preConfigCache['default_theme'] = $groupThemePair;
+
+        Cache::put($cacheKey, $preConfigCache);
+    }
+
+    /**
+     * Get default theme
+     *
+     * @return null|string|array
+     */
+    public static function getDefaultTheme(): mixed
+    {
+        return Config::get('theme-manager.default_theme');
     }
 }

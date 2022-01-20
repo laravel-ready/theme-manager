@@ -3,20 +3,15 @@
 return [
 
     /**
-     * Default theme alias
+     * Default group:theme pair
      *
      * When target theme is not found loads default theme
      *
      * If value is null throws exception eventually
+     *
+     * Accepts string or array string
      */
     'default_theme' => null,
-
-    /**
-     * Default group alias
-     *
-     * Required with "default_theme"
-     */
-    'default_group' => null,
 
     /**
      * Themes root folder required for loading blade views etc.
