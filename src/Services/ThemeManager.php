@@ -10,6 +10,15 @@ use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
 class ThemeManager
 {
+    public function __construct()
+    {
+        $rootFolder = Config::get('theme-manager.themes_root_folder');
+
+        if (!File::exists($rootFolder)) {
+            File::makeDirectory($rootFolder);
+        }
+    }
+
     /**
      * Get asset public static url
      *
