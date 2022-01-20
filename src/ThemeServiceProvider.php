@@ -12,9 +12,9 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 use LaravelReady\ThemeManager\Services\ThemeManager;
 use LaravelReady\ThemeManager\Directives\AssetDirectives;
-
 use LaravelReady\ThemeManager\Services\CustomBladeCompiler;
 use LaravelReady\ThemeManager\Http\Middleware\ThemeManagerMiddleware;
+use LaravelReady\ThemeManager\Console\Commands\ThemeListCommand;
 
 final class ThemeServiceProvider extends BaseServiceProvider
 {
@@ -25,6 +25,8 @@ final class ThemeServiceProvider extends BaseServiceProvider
         $this->registerDirectives();
 
         $this->loadMiddlewares($router);
+
+        $this->loadCommands();
 
         if (!App::environment('production') && config('theme-manager.disable_view_cache')) {
             Artisan::call('view:clear');
@@ -80,8 +82,24 @@ final class ThemeServiceProvider extends BaseServiceProvider
         }
     }
 
-    private function loadMiddlewares($router): void
+    /**
+     * Load ThemeManagerMiddleware
+     *
+     * @param Router $router
+     */
+    private function loadMiddlewares(Router $router): void
     {
         $router->aliasMiddleware('theme-manager', ThemeManagerMiddleware::class);
+    }
+
+    /**
+     * Load package commands
+     */
+    private function loadCommands() {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ThemeListCommand::class,
+            ]);
+        }
     }
 }
