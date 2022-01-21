@@ -26,12 +26,10 @@ class ThemeManagerMiddleware
 
         $currentTheme = Config::get('theme-manager.current_theme');
 
-        if (!$currentTheme->status) {
-            throw new ThemeManagerException("Theme disabled.");
-        }
-
         // check theme forced by service
         if ($currentTheme) {
+            $this->checkThemeStatus($currentTheme);
+
             View::addNamespace('theme', $currentTheme->views);
 
             return $next($request);
@@ -47,64 +45,103 @@ class ThemeManagerMiddleware
             if ($theme && $group) {
                 $currentTheme = ThemeManager::setTheme($theme, $group);
 
-                if (!$currentTheme->status) {
-                    throw new ThemeManagerException("Theme disabled.");
-                }
-
-                if ($currentTheme) {
-                    if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
-                        throw new ThemeManagerException("This route resticted only theme group:
-                            \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
-                    }
-
-                    View::addNamespace('theme', $currentTheme->views);
-
+                if ($this->checkMiddlewareTheme($currentTheme, $restrictGroup, $defaultTheme)) {
                     return $next($request);
-                }
-
-                if ($defaultTheme == null) {
-                    throw new ThemeManagerException("Configured middleware theme \"{$group}:{$theme}\" could not found.");
                 }
             }
 
             // check default theme
-            if ($defaultTheme) {
-                if (is_string($defaultTheme)) {
-                    $_defaultTheme = explode(':', $defaultTheme);
-
-                    $group = $_defaultTheme[0];
-                    $theme = $_defaultTheme[1];
-                } else if ($group && is_array($defaultTheme)) {
-                    foreach ($defaultTheme as $themePair) {
-                        if (Str::startsWith($themePair, "{$group}:")) {
-                            $_defaultTheme = explode(':', $themePair);
-
-                            $theme = $_defaultTheme[1];
-
-                            break;
-                        }
-                    }
-                }
-
-                if ($theme && $group) {
-                    $currentTheme = ThemeManager::setTheme($theme, $group);
-
-                    if (!$currentTheme->status) {
-                        throw new ThemeManagerException("Theme disabled.");
-                    }
-
-                    if ($currentTheme) {
-                        View::addNamespace('theme', $currentTheme->views);
-
-                        return $next($request);
-                    }
-
-                    throw new ThemeManagerException("Configured default theme
-                        \"{$group}:{$theme}\" could not found.");
+            if ($defaultTheme && $group) {
+                if ($this->checkDefaultTheme($defaultTheme, $group)) {
+                    return $next($request);
                 }
             }
         }
 
         throw new ThemeManagerException("Requested theme could not found.");
+    }
+
+    /**
+     * Check and load middleware theme
+     *
+     * @param object $currentTheme
+     * @param string $restrictGroup
+     * @param mixed $defaultTheme
+     *
+     * @return bool
+     */
+    private function checkMiddlewareTheme(object $currentTheme, string $restrictGroup, mixed $defaultTheme)
+    {
+        if ($currentTheme) {
+            $this->checkThemeStatus($currentTheme);
+
+            if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
+                throw new ThemeManagerException("This route resticted only theme group:
+                    \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
+            }
+
+            View::addNamespace('theme', $currentTheme->views);
+
+            return true;
+        }
+
+        if ($defaultTheme == null) {
+            throw new ThemeManagerException("Configured middleware theme \"{$currentTheme->group}:{$currentTheme->alias}\" could not found.");
+        }
+
+        return false;
+    }
+
+    /**
+     * Check and load default theme
+     *
+     * @param string|array $defaultTheme
+     * @param string $group
+     *
+     * @return bool
+     */
+    private function checkDefaultTheme(string|array $defaultTheme, string $group)
+    {
+        $theme = null;
+
+        if (is_string($defaultTheme)) {
+            ThemeSupport::splitGroupTheme($defaultTheme, $group, $theme);
+        } else if ($group && is_array($defaultTheme)) {
+            foreach ($defaultTheme as $themePair) {
+                if (Str::startsWith($themePair, "{$group}:")) {
+                    ThemeSupport::splitGroupTheme($themePair, $group, $theme);
+
+                    break;
+                }
+            }
+        }
+
+        if ($theme && $group) {
+            $currentTheme = ThemeManager::setTheme($theme, $group);
+
+            $this->checkThemeStatus($currentTheme);
+
+            if ($currentTheme) {
+                View::addNamespace('theme', $currentTheme->views);
+
+                return true;
+            }
+
+            throw new ThemeManagerException("Configured default theme \"{$group}:{$theme}\" could not found.");
+        }
+
+        return false;
+    }
+
+    /**
+     * Check theme is active
+     *
+     * @param object $currentTheme
+     */
+    private function checkThemeStatus(object $currentTheme)
+    {
+        if (!$currentTheme->status) {
+            throw new ThemeManagerException("Theme disabled.");
+        }
     }
 }
