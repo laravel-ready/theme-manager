@@ -27,7 +27,8 @@ class CreateCommand extends Command
      * New theme variable
      */
     protected $theme = [
-        'version' => '1.0.0'
+        'version' => '1.0.0',
+        'status' => true
     ];
 
     /**

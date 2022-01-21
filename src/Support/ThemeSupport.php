@@ -2,6 +2,8 @@
 
 namespace LaravelReady\ThemeManager\Support;
 
+use Illuminate\Support\Str;
+
 class ThemeSupport
 {
     /**
@@ -71,5 +73,30 @@ class ThemeSupport
     public static function prettyJson(mixed $content): string
     {
         return json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * Get group:theme pair
+     *
+     * @param string $$groupThemePair
+     *
+     * @return string
+     */
+    public static function splitGroupTheme(string $groupThemePair, string|null &$group, string|null &$theme)
+    {
+        $group = null;
+        $theme = null;
+
+        if (Str::contains($groupThemePair, ':')) {
+            $groupThemePair = explode(':', $groupThemePair, 2);
+
+            $group = $groupThemePair[0];
+            $theme = $groupThemePair[1];
+        }
+
+        return [
+            'group' => $group,
+            'theme' => $theme
+        ];
     }
 }

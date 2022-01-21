@@ -5,6 +5,7 @@ namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
+use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
 class DeleteCommand extends Command
@@ -55,29 +56,25 @@ class DeleteCommand extends Command
             }
         }
 
-        if (Str::contains($themeName, ':')) {
-            $groupTheme = explode(':', $themeName, 2);
+        ThemeSupport::splitGroupTheme($themeName, $group, $theme);
 
-            if (count($groupTheme) == 2) {
-                $theme = ThemeManager::getTheme($groupTheme[1], $groupTheme[0]);
+        if ($theme && $group) {
+            if (ThemeManager::getTheme($theme, $group)) {
+                if ($this->askConfirmation()) {
+                    $result = ThemeManager::deleteTheme($theme, $group);
 
-                if ($theme) {
-                    if ($this->askConfirmation()) {
-                        $result = ThemeManager::deleteTheme($groupTheme[1], $groupTheme[0]);
-
-                        if ($result) {
-                            return $this->info("Theme \"{$themeName}\" deleted.");
-                        } else {
-                            return $this->info('Theme could not deleted.');
-                        }
+                    if ($result) {
+                        return $this->info("Theme \"{$group}:{$theme}\" deleted.");
+                    } else {
+                        return $this->info('Theme could not deleted.');
                     }
-                } else {
-                    return $this->error('Requested theme not found.');
                 }
             }
-        } else {
-            return $this->error('Please enter valid theme');
+
+            return $this->error("Requested theme \"{$group}:{$theme}\" not found.");
         }
+
+        return $this->error('Please enter valid theme');
     }
 
     private function askConfirmation()

@@ -5,6 +5,7 @@ namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
+use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
 class StatusCommand extends Command
@@ -46,7 +47,13 @@ class StatusCommand extends Command
     private function askTheme()
     {
         $themeName = $this->argument('theme');
-        $status = $this->argument('status') === 'true';
+        $status = $this->argument('status');
+
+        if ($status != 'true' && $status != 'false') {
+            return $this->error('Please enter valid status value. Only "true" or "false" accepting.');
+        }
+
+        $status = $status === 'true';
 
         if (!$themeName) {
             $themeName = $this->ask('Theme group:theme');
@@ -56,24 +63,32 @@ class StatusCommand extends Command
             }
         }
 
-        if (Str::contains($themeName, ':')) {
-            $groupTheme = explode(':', $themeName, 2);
+        if ($themeName == 'all') {
+            if (ThemeManager::setThemeStatusAll($status)) {
+                $statusText = $status ? 'active' : 'passive';
 
-            if (count($groupTheme) == 2) {
-                $theme = ThemeManager::getTheme($groupTheme[1], $groupTheme[0]);
-
-                if ($theme) {
-                    if (ThemeManager::setThemeStatus($groupTheme[1], $groupTheme[0], $status)) {
-                        return $this->info("Theme \"{$themeName}\" status updated as \"{$status}\".");
-                    }
-
-                    return $this->info('Theme status could not updated.');
-                } else {
-                    return $this->error('Requested theme not found.');
-                }
+                return $this->info("All themes statuses updated as \"{$statusText}\".");
             }
-        } else {
-            return $this->error('Please enter valid theme');
+
+            return $this->info('Themes status could not updated.');
         }
+
+        ThemeSupport::splitGroupTheme($themeName, $group, $theme);
+
+        if ($group && $theme) {
+            if (ThemeManager::getTheme($theme, $group)) {
+                if (ThemeManager::setThemeStatus($theme, $group, $status)) {
+                    $statusText = $status ? 'active' : 'passive';
+
+                    return $this->info("Theme \"{$themeName}\" status updated as \"{$statusText}\".");
+                }
+
+                return $this->info('Theme status could not updated.');
+            }
+
+            return $this->error('Requested theme not found.');
+        }
+
+        return $this->error('Please enter valid theme');
     }
 }

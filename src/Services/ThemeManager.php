@@ -288,6 +288,8 @@ class ThemeManager
                 }
             }
 
+            self::reScanThemes();
+
             return [
                 'result' => true,
                 'message' => "Theme \"{$themeConfigs['group']}:{$themeConfigs['alias']}\" created successfully"
@@ -355,5 +357,32 @@ class ThemeManager
         }
 
         return false;
+    }
+
+    /**
+     * Set status to all themes
+     *
+     * @param bool $thme
+     */
+    public static function setThemeStatusAll(bool $status): bool
+    {
+        $themeGroups = self::reScanThemes();
+        $totalResult = true;
+
+        if (count($themeGroups)) {
+            foreach ($themeGroups as $group => $themeGroup) {
+                foreach ($themeGroup as $theme) {
+                    $result = self::setThemeStatus($theme->alias, $group, $status);
+
+                    if (!$result) {
+                        $totalResult = $result;
+                    }
+                }
+            }
+        }
+
+        self::reScanThemes();
+
+        return $totalResult;
     }
 }
