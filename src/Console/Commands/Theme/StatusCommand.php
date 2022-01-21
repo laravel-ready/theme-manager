@@ -64,7 +64,7 @@ class StatusCommand extends Command
 
                 if ($theme) {
                     if (ThemeManager::setThemeStatus($groupTheme[1], $groupTheme[0], $status)) {
-                        return $this->info("Theme \"{$themeName}\" status updated.");
+                        return $this->info("Theme \"{$themeName}\" status updated as \"{$status}\".");
                     }
 
                     return $this->info('Theme status could not updated.');
