@@ -26,6 +26,10 @@ class ThemeManagerMiddleware
 
         $currentTheme = Config::get('theme-manager.current_theme');
 
+        if (!$currentTheme->status) {
+            throw new ThemeManagerException("Theme disabled.");
+        }
+
         // check theme forced by service
         if ($currentTheme) {
             View::addNamespace('theme', $currentTheme->views);
@@ -42,6 +46,10 @@ class ThemeManagerMiddleware
             // check middleware theme
             if ($theme && $group) {
                 $currentTheme = ThemeManager::setTheme($theme, $group);
+
+                if (!$currentTheme->status) {
+                    throw new ThemeManagerException("Theme disabled.");
+                }
 
                 if ($currentTheme) {
                     if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
@@ -80,6 +88,10 @@ class ThemeManagerMiddleware
 
                 if ($theme && $group) {
                     $currentTheme = ThemeManager::setTheme($theme, $group);
+
+                    if (!$currentTheme->status) {
+                        throw new ThemeManagerException("Theme disabled.");
+                    }
 
                     if ($currentTheme) {
                         View::addNamespace('theme', $currentTheme->views);
