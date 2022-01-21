@@ -66,7 +66,7 @@ class DeleteCommand extends Command
                         $result = ThemeManager::deleteTheme($groupTheme[1], $groupTheme[0]);
 
                         if ($result) {
-                            return $this->info('Theme deleted.');
+                            return $this->info("Theme \"{$themeName}\" deleted.");
                         } else {
                             return $this->info('Theme could not deleted.');
                         }
@@ -83,8 +83,6 @@ class DeleteCommand extends Command
     private function askConfirmation()
     {
         $confirmation = $this->ask('This theme will be delete. Are you sure? (yes/no)');
-
-        $this->info($confirmation);
 
         if ($confirmation !== null) {
             if ($confirmation == 'yes') {

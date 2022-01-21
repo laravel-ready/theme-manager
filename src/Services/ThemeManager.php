@@ -192,7 +192,7 @@ class ThemeManager
     }
 
     /**
-     * Set default theme and group
+     * Add default theme
      *
      * @param string|array $theme
      * @param string|array $group
@@ -259,7 +259,7 @@ class ThemeManager
 
             return [
                 'result' => true,
-                'message' => 'Theme created successfully'
+                'message' => "Theme \"{$themeConfigs['group']}:{$themeConfigs['alias']}\" created successfully"
             ];
         }
 

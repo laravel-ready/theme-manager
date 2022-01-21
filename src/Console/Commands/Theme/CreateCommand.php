@@ -78,7 +78,7 @@ class CreateCommand extends Command
 
     private function askDescription()
     {
-        $description = $this->ask('Theme Description (optional)');
+        $description = $this->ask('Theme Description /optional/');
 
         $this->theme['description'] = $description;
     }
@@ -91,7 +91,7 @@ class CreateCommand extends Command
             $this->askAuthor();
         }
 
-        $authorContact = $this->ask('Author Contact Address or Email');
+        $authorContact = $this->ask('Author Contact Address or Email /optional/');
 
         $this->theme['authors'][] = [
             'name' => $authorName,

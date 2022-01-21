@@ -8,8 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
-
 use Illuminate\Support\Facades\Config;
+
 use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
