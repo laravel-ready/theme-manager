@@ -60,4 +60,16 @@ class ThemeSupport
 
         return $args;
     }
+
+    /**
+     * Pretty preint JSON content
+     *
+     * @param mixed $content
+     *
+     * @return string
+     */
+    public static function prettyJson(mixed $content): string
+    {
+        return json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
 }

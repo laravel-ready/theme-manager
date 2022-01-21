@@ -5,7 +5,7 @@ namespace LaravelReady\ThemeManager\Services;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Validation\Rules\Exists;
+use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
 class ThemeManager
@@ -275,7 +275,7 @@ class ThemeManager
             $isCopied = File::copyDirectory($themeTemplateFolder, $themeFolder);
 
             if ($isCopied) {
-                $themeConfigFile = json_encode($themeConfigs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $themeConfigFile = ThemeSupport::prettyJson($themeConfigs);
 
                 $result = File::put("{$themeFolder}/theme-configs.json", $themeConfigFile);
 
@@ -315,6 +315,42 @@ class ThemeManager
 
         if (File::exists($themeFolder)) {
             return File::deleteDirectory($themeFolder);
+        }
+
+        return false;
+    }
+
+    /**
+     * Set theme status
+     *
+     * After theme status updated rescans themes
+     *
+     * @param string $theme
+     * @param string $group
+     * @param bool $status
+     *
+     * @param bool
+     */
+    public static function setThemeStatus(string $theme, string $group, bool $status): bool
+    {
+        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
+
+        $themeConfigsFile = "{$themesFolder}/{$group}/{$theme}/theme-configs.json";
+
+        if (File::exists($themeConfigsFile)) {
+            $themeConfigs = json_decode(File::get($themeConfigsFile));
+
+            if ($themeConfigs) {
+                $themeConfigs->status = $status;
+
+                $result = File::put($themeConfigsFile, ThemeSupport::prettyJson($themeConfigs));
+
+                if ($result) {
+                    self::reScanThemes();
+
+                    return $result;
+                }
+            }
         }
 
         return false;
