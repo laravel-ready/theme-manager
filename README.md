@@ -10,7 +10,13 @@
 
 This dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features. This package uses custom middleware for overwriting view path with selected theme.
 
-**[Documentation](https://laravel-ready.github.io/theme-manager)**
+## Documentation
+
+Documentation and simple examples can be found **[here](https://laravel-ready.github.io/theme-manager-docs/)**
+
+## Example Project
+
+**[Example](https://github.com/laravel-ready/theme-manager-example)** project and various demos contains
 
 ## Credits
 
