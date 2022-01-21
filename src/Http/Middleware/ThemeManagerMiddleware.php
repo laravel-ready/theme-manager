@@ -78,16 +78,18 @@ class ThemeManagerMiddleware
                     }
                 }
 
-                $currentTheme = ThemeManager::setTheme($theme, $group);
+                if ($theme && $group) {
+                    $currentTheme = ThemeManager::setTheme($theme, $group);
 
-                if ($currentTheme) {
-                    View::addNamespace('theme', $currentTheme->views);
+                    if ($currentTheme) {
+                        View::addNamespace('theme', $currentTheme->views);
 
-                    return $next($request);
+                        return $next($request);
+                    }
+
+                    throw new ThemeManagerException("Configured default theme
+                        \"{$group}:{$theme}\" could not found.");
                 }
-
-                throw new ThemeManagerException("Configured default theme
-                   \"{$group}:{$theme}\" could not found.");
             }
         }
 

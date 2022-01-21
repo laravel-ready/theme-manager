@@ -219,6 +219,36 @@ class ThemeManager
     }
 
     /**
+     * Remove default theme
+     *
+     * @param string|array $theme
+     * @param string|array $group
+     */
+    public static function removeDefaultTheme(string|array $groupThemePair): void
+    {
+        $cacheKey = 'theme-manager.preconfigs';
+
+        $preConfigCache = Cache::get($cacheKey) ?? [];
+        $defaultTheme = $preConfigCache['default_theme'] ?? [];
+
+        if (is_string($defaultTheme) && is_string($groupThemePair)) {
+            if ($defaultTheme == $groupThemePair) {
+                $defaultTheme = [];
+            }
+        } else {
+            $groupThemePair = is_string($groupThemePair) ? [$groupThemePair] : $groupThemePair;
+
+            if (count($defaultTheme) > 0) {
+                $defaultTheme = array_diff($defaultTheme, $groupThemePair);
+            }
+        }
+
+        $preConfigCache['default_theme'] = $defaultTheme;
+
+        Cache::put($cacheKey, $preConfigCache);
+    }
+
+    /**
      * Create new theme
      *
      * @param array $themeConfigs
