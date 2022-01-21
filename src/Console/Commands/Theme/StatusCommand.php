@@ -7,21 +7,21 @@ use Illuminate\Console\Command;
 
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
-class DeleteCommand extends Command
+class StatusCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'theme-manager:destroy {theme}';
+    protected $signature = 'theme-manager:status {theme} {status}';
 
     /**
-     * Delete selected theme
+     * Update theme status
      *
      * @var string
      */
-    protected $description = 'Delete selected theme';
+    protected $description = 'Update theme status';
 
     /**
      * Create a new command instance.
@@ -46,6 +46,7 @@ class DeleteCommand extends Command
     private function askTheme()
     {
         $themeName = $this->argument('theme');
+        $status = $this->argument('status') === 'true';
 
         if (!$themeName) {
             $themeName = $this->ask('Theme group:theme');
@@ -62,38 +63,17 @@ class DeleteCommand extends Command
                 $theme = ThemeManager::getTheme($groupTheme[1], $groupTheme[0]);
 
                 if ($theme) {
-                    if ($this->askConfirmation()) {
-                        $result = ThemeManager::deleteTheme($groupTheme[1], $groupTheme[0]);
-
-                        if ($result) {
-                            return $this->info("Theme \"{$themeName}\" deleted.");
-                        } else {
-                            return $this->info('Theme could not deleted.');
-                        }
+                    if (ThemeManager::setThemeStatus($groupTheme[1], $groupTheme[0], $status)) {
+                        return $this->info("Theme \"{$themeName}\" status updated.");
                     }
+
+                    return $this->info('Theme status could not updated.');
                 } else {
                     return $this->error('Requested theme not found.');
                 }
             }
         } else {
             return $this->error('Please enter valid theme');
-        }
-    }
-
-    private function askConfirmation()
-    {
-        $confirmation = $this->ask('This theme will be delete. Are you sure? (yes/no)');
-
-        if ($confirmation !== null) {
-            if ($confirmation == 'yes') {
-                return true;
-            } else {
-                $this->warn('Canceled theme delete operation.');
-            }
-
-            return false;
-        } else {
-            return $this->askConfirmation();
         }
     }
 }
