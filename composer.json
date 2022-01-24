@@ -3,7 +3,7 @@
     "description": "Theme manager for Laravel",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "keywords": [
         "laravel",
         "theme manager"
