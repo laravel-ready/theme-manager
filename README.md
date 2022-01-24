@@ -16,7 +16,7 @@ Documentation and simple examples can be found **[here](https://laravel-ready.gi
 
 ## Example Project
 
-**[Example](https://github.com/laravel-ready/theme-manager-example)** project and various demos contains
+**[Example](https://github.com/laravel-ready/theme-manager-example)** project contains various demo templates and applications
 
 ## Credits
 
