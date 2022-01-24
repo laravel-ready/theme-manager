@@ -70,7 +70,7 @@ class ThemeManagerMiddleware
      *
      * @return bool
      */
-    private function checkMiddlewareTheme(object $currentTheme, string $restrictGroup, mixed $defaultTheme)
+    private function checkMiddlewareTheme(object $currentTheme, string|null $restrictGroup, mixed $defaultTheme)
     {
         if ($currentTheme) {
             $this->checkThemeStatus($currentTheme);
