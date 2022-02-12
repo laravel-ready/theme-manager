@@ -1,6 +1,6 @@
 # Laravel Theme Manager
 
-![EgoistDeveloper Laravel Theme Manager](https://preview.dragon-code.pro/EgoistDeveloper/Laravel-Theme-Manager.svg?brand=laravel)
+[![EgoistDeveloper Laravel Theme Manager](https://preview.dragon-code.pro/EgoistDeveloper/Laravel-Theme-Manager.svg?brand=laravel)](https://github.com/laravel-ready/theme-manager)
 
 [![Stable Version][badge_stable]][link_packagist]
 [![Unstable Version][badge_unstable]][link_packagist]
@@ -8,7 +8,7 @@
 [![License][badge_license]][link_license]
 
 
-This dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features. This package uses custom middleware for overwriting view path with selected theme.
+This dynamic theme manager brings theme support to Laravel projects. Theme Manager manages multiple theme at same time and you won't lose build-in Laravel features.
 
 ## Documentation
 
@@ -17,6 +17,12 @@ Documentation and simple examples can be found **[here](https://laravel-ready.gi
 ## Example Project
 
 **[Example](https://github.com/laravel-ready/theme-manager-example)** project contains various demo templates and applications
+
+## Todo
+
+- [ ] Add store support
+- [ ] Add CSS theme support
+- [ ] Add tests
 
 ## Credits
 
