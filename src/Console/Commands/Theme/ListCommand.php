@@ -5,6 +5,7 @@ namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
+
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
 class ListCommand extends Command
@@ -17,7 +18,7 @@ class ListCommand extends Command
     protected $signature = 'theme-manager:list';
 
     /**
-     * List all installed themes
+     * Command description
      *
      * @var string
      */
@@ -60,38 +61,36 @@ class ListCommand extends Command
 
             $defaultTheme = Config::get('theme-manager.default_theme');
 
-            foreach ($themes as $group => $themes) {
-                foreach ($themes as $theme) {
-                    ++$index;
+            foreach ($themes as $theme) {
+                ++$index;
 
-                    $authors = array_map(function ($author) {
-                        return $author->name;
-                    }, $theme->authors);
+                $authors = array_map(function ($author) {
+                    return $author['name'];
+                }, $theme->authors);
 
-                    $authors = implode(', ', $authors);
+                $authors = implode(', ', $authors);
 
-                    $isDefaultTheme = false;
+                $isDefaultTheme = false;
 
-                    if ($defaultTheme) {
-                        if (is_string($defaultTheme)) {
-                            $isDefaultTheme = $defaultTheme == "{$group}:{$theme->alias}";
-                        } else if (is_array($defaultTheme)) {
-                            $isDefaultTheme = in_array("{$group}:{$theme->alias}", $defaultTheme);
-                        }
+                if ($defaultTheme) {
+                    if (is_string($defaultTheme)) {
+                        $isDefaultTheme = $defaultTheme == "{$theme->alias}";
+                    } else if (is_array($defaultTheme)) {
+                        $isDefaultTheme = in_array("{$theme->alias}", $defaultTheme);
                     }
-
-                    $themeList[] = [
-                        'Index' => " [{$index}]",
-                        'Default' => $isDefaultTheme ? 'Yes' : '-',
-                        'Name' => $theme->name,
-                        'Alias' => $theme->alias,
-                        'Status' => $theme->status == true ? 'Active' : 'Passive',
-                        'Group' => $group,
-                        'Description' => Str::limit($theme->description, 30, '...'),
-                        'Authors' => $authors,
-                        'Version' => $theme->version
-                    ];
                 }
+
+                $themeList[] = [
+                    'Index' => " [{$index}]",
+                    'Default' => $isDefaultTheme ? 'Yes' : '-',
+                    'Name' => $theme->name,
+                    'Alias' => $theme->alias,
+                    'Status' => $theme->status == true ? 'Active' : 'Passive',
+                    'Group' => $theme->group,
+                    'Description' => Str::limit($theme->description, 30, '...'),
+                    'Authors' => $authors,
+                    'Version' => $theme->version
+                ];
             }
 
             $this->info('');

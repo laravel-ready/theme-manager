@@ -18,7 +18,7 @@ class StatusCommand extends Command
     protected $signature = 'theme-manager:status {theme} {status}';
 
     /**
-     * Update theme status
+     * Command description
      *
      * @var string
      */
@@ -46,7 +46,7 @@ class StatusCommand extends Command
 
     private function askTheme()
     {
-        $themeName = $this->argument('theme');
+        $groupThemePair = $this->argument('theme');
         $status = $this->argument('status');
 
         if ($status != 'true' && $status != 'false') {
@@ -55,15 +55,15 @@ class StatusCommand extends Command
 
         $status = $status === 'true';
 
-        if (!$themeName) {
-            $themeName = $this->ask('Theme group:theme');
+        if (!$groupThemePair) {
+            $groupThemePair = $this->ask('Theme vendor/theme');
 
-            if (!$themeName) {
-                return $this->error('Please enter group:theme');
+            if (!$groupThemePair) {
+                return $this->error('Please enter vendor/theme');
             }
         }
 
-        if ($themeName == 'all') {
+        if ($groupThemePair == 'all') {
             if (ThemeManager::setThemeStatusAll($status)) {
                 $statusText = $status ? 'active' : 'passive';
 
@@ -73,22 +73,16 @@ class StatusCommand extends Command
             return $this->info('Themes status could not updated.');
         }
 
-        ThemeSupport::splitGroupTheme($themeName, $group, $theme);
+        if (ThemeManager::getTheme($groupThemePair)) {
+            if (ThemeManager::setThemeStatus($groupThemePair, $status)) {
+                $statusText = $status ? 'active' : 'passive';
 
-        if ($group && $theme) {
-            if (ThemeManager::getTheme($theme, $group)) {
-                if (ThemeManager::setThemeStatus($theme, $group, $status)) {
-                    $statusText = $status ? 'active' : 'passive';
-
-                    return $this->info("Theme \"{$themeName}\" status updated as \"{$statusText}\".");
-                }
-
-                return $this->info('Theme status could not updated.');
+                return $this->info("Theme \"{$groupThemePair}\" status updated as \"{$statusText}\".");
             }
 
-            return $this->error('Requested theme not found.');
+            return $this->info('Theme status could not updated.');
         }
 
-        return $this->error('Please enter valid theme');
+        return $this->error('Requested theme not found.');
     }
 }

@@ -2,10 +2,18 @@
 
 namespace LaravelReady\ThemeManager\Support;
 
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+
+use LaravelReady\ThemeManager\Services\Theme;
+use LaravelReady\ThemeManager\Traits\CacheKeyTrait;
+use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
 class ThemeSupport
 {
+    use CacheKeyTrait;
+
     /**
      * Extract blade directive arguments as array
      *
@@ -76,27 +84,104 @@ class ThemeSupport
     }
 
     /**
-     * Get group:theme pair
+     * Get all themes in one list
      *
-     * @param string $$groupThemePair
-     *
-     * @return string
+     * @return array|null
      */
-    public static function splitGroupTheme(string $groupThemePair, string|null &$group, string|null &$theme)
+    public static function simpleThemeList()
     {
-        $group = null;
-        $theme = null;
+        $themes = Cache::get(self::$themesCacheKey);
 
-        if (Str::contains($groupThemePair, ':')) {
-            $groupThemePair = explode(':', $groupThemePair, 2);
-
-            $group = $groupThemePair[0];
-            $theme = $groupThemePair[1];
+        if ($themes) {
+            return $themes->map(function (Theme $theme) {
+                return "{$theme->vendor}/{$theme->theme}";
+            })->toArray();
         }
 
-        return [
-            'group' => $group,
-            'theme' => $theme
-        ];
+        return null;
+    }
+
+    /**
+     * Parse theme aliases
+     *
+     * @param string $theme
+     *
+     * @return array|false
+     */
+    public static function parseThemeAliases(string $aliases, string &$vendor = null, string &$theme = null): array|false
+    {
+        $vendorThemePair = explode('/', $aliases);
+
+        if (isset($vendorThemePair[1])) {
+            $vendor = $vendorThemePair[0];
+            $theme = $vendorThemePair[1];
+
+            return [
+                'vendor' => $vendor,
+                'theme' => $theme
+            ];
+        }
+
+        $themeList = self::simpleThemeList();
+
+        $installedThemes = $themeList ? "Installed themes: " . implode(', ', $themeList) : '';
+
+        throw new ThemeManagerException("Requested theme aliases are not valid: \"{$theme}\".
+            Theme aliases must be in \"vendor/theme\" format. {$installedThemes}");
+    }
+
+    /**
+     * Get theme configs
+     *
+     * @param string $themePath
+     * @param string $vendor
+     * @param string $themesRootFolder
+     *
+     * @return Theme
+     */
+    public static function getThemeConfigs(string $themePath, string $vendor = null)
+    {
+        $themeConfigFile = "{$themePath}/theme-configs.json";
+
+        if (File::exists($themeConfigFile)) {
+            $themeConfigs = json_decode(File::get($themeConfigFile), true);
+            $themesRootFolder = Config::get('theme-manager.themes_root_folder');
+
+            $themeConfigs['alias'] = "{$themeConfigs['vendor']}/{$themeConfigs['theme']}";
+            $themeConfigs['path'] = $themePath;
+            $themeConfigs['vendor'] = $themeConfigs['vendor'] ?? $vendor;
+            $themeConfigs['views'] = "{$themePath}/views";
+            $themeConfigs['preview'] = null;
+
+            $themeAssetPath = "{$themePath}/public";
+            $publicAssetPath = public_path("{$themesRootFolder}\\{$themeConfigs['vendor']}\\{$themeConfigs['theme']}");
+
+            $themeConfigs['asset_path'] = $publicAssetPath;
+
+            $themePreviewFileName = "{$themePath}/theme-preview";
+
+            if (File::exists("{$themePreviewFileName}.png")) {
+                $themeConfigs['preview'] = "{$themePreviewFileName}.png";
+            } else if (File::exists("{$themePreviewFileName}.jpg")) {
+                $themeConfigs['preview'] = "{$themePreviewFileName}.jpg";
+            }
+
+            if ($themeConfigs['preview']) {
+                $themeConfigs['preview'] = base64_encode(File::get($themeConfigs['preview']));
+            } else {
+                $themeConfigs['preview_default'] = base64_encode(File::get(__DIR__ . '/../../resources/images/preview-default.jpg'));
+            }
+
+            if (
+                !File::exists($publicAssetPath) &&
+                (!empty(File::files($themeAssetPath)) && empty(File::files($publicAssetPath)))
+            ) {
+                File::copyDirectory($themeAssetPath, $publicAssetPath);
+            }
+
+            return new Theme($themeConfigs);
+        }
+
+        return null;
     }
 }

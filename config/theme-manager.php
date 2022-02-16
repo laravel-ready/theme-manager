@@ -3,7 +3,7 @@
 return [
 
     /**
-     * Default group:theme pair
+     * Default vendor/theme pair
      *
      * When target theme is not found loads default theme
      *
@@ -14,7 +14,7 @@ return [
     'default_theme' => null,
 
     /**
-     * Themes root folder required for loading blade views etc.
+     * Themes root folder required for loading views, assets etc.
      */
     'themes_root_folder' => 'themes',
 
@@ -24,5 +24,4 @@ return [
      * This option won't run on production
      */
     'disable_view_cache' => true,
-
 ];

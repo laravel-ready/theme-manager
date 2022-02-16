@@ -2,10 +2,8 @@
 
 namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-
-use LaravelReady\ThemeManager\Services\ThemeManager;
+use LaravelReady\ThemeManager\Services\Theme;
 
 class CreateCommand extends Command
 {
@@ -17,7 +15,7 @@ class CreateCommand extends Command
     protected $signature = 'theme-manager:make';
 
     /**
-     * Create new theme
+     * Command description
      *
      * @var string
      */
@@ -26,10 +24,7 @@ class CreateCommand extends Command
     /**
      * New theme variable
      */
-    protected $theme = [
-        'version' => '1.0.0',
-        'status' => true
-    ];
+    protected $theme;
 
     /**
      * Create a new command instance.
@@ -48,23 +43,54 @@ class CreateCommand extends Command
      */
     public function handle()
     {
+        $this->theme = new Theme();
+
+        $this->askGroup();
+
+        $this->askVendor();
+
         $this->askThemeName();
 
         $this->askDescription();
 
         $this->askAuthor();
 
-        $this->askGroup();
+        $result = $this->theme->create();
 
-        $reesult = ThemeManager::createTheme($this->theme);
-
-        if (!$reesult['result']) {
-            return $this->error($reesult['message']);
+        if (!$result['result']) {
+            return $this->error($result['message']);
         }
 
-        $this->info($reesult['message']);
+        $this->info($result['message']);
     }
 
+    /**
+     * Ask for theme group name
+     */
+    private function askGroup()
+    {
+        $themeGroup = $this->ask('Theme Group (as slug. web, admin etc)');
+
+        $this->theme->setGroup($themeGroup);
+    }
+
+    /**
+     * Ask for theme vendor slug
+     */
+    private function askVendor()
+    {
+        $vendorSlug = $this->ask('Theme Vendor (as slug)');
+
+        if (!$vendorSlug) {
+            $this->askVendor();
+        }
+
+        $this->theme->setVendor($vendorSlug);
+    }
+
+    /**
+     * Ask for theme name
+     */
     private function askThemeName()
     {
         $themeName = $this->ask('Theme Name');
@@ -73,17 +99,25 @@ class CreateCommand extends Command
             $this->askThemeName();
         }
 
-        $this->theme['name'] = $themeName;
-        $this->theme['alias'] = Str::slug($themeName);
+        $this->theme->setName($themeName);
+        $this->theme->setTheme($themeName);
     }
 
+    /**
+     * Ask for theme description
+     */
     private function askDescription()
     {
-        $description = $this->ask('Theme Description /optional/');
+        $description = $this->ask('Theme Description (optional)');
 
-        $this->theme['description'] = $description;
+        if (!empty($description)) {
+            $this->theme->setDescription($description);
+        }
     }
 
+    /**
+     * Ask for theme author name or email
+     */
     private function askAuthor()
     {
         $authorName = $this->ask('Author Name');
@@ -92,18 +126,8 @@ class CreateCommand extends Command
             $this->askAuthor();
         }
 
-        $authorContact = $this->ask('Author Contact Address or Email /optional/');
+        $authorContact = $this->ask('Author Contact Address or Email (optional)');
 
-        $this->theme['authors'][] = [
-            'name' => $authorName,
-            'contact' => $authorContact
-        ];
-    }
-
-    private function askGroup()
-    {
-        $themeGroup = $this->ask('Theme Group');
-
-        $this->theme['group'] = Str::slug($themeGroup);
+        $this->theme->addAuthor($authorName, $authorContact);
     }
 }

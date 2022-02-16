@@ -98,8 +98,8 @@ class AssetDirectives
 
         if ($svgCache == null) {
             $themesFolder = Config::get('theme-manager.current_theme');
-            
-            $svgPath = public_path("{$themesFolder}\\{$theme->group}\\{$theme->alias}\\svg\\{$svgName}.svg");
+
+            $svgPath = public_path("{$themesFolder}\\{$theme->vendor}\\{$theme->theme}\\svg\\{$svgName}.svg");
 
             if (file_exists($svgPath)) {
                 $svg = new \DOMDocument();

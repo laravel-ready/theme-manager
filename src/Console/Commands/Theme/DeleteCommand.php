@@ -2,10 +2,8 @@
 
 namespace LaravelReady\ThemeManager\Console\Commands\Theme;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 
-use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
 class DeleteCommand extends Command
@@ -18,7 +16,7 @@ class DeleteCommand extends Command
     protected $signature = 'theme-manager:destroy {theme}';
 
     /**
-     * Delete selected theme
+     * Command description
      *
      * @var string
      */
@@ -46,35 +44,31 @@ class DeleteCommand extends Command
 
     private function askTheme()
     {
-        $themeName = $this->argument('theme');
+        $groupThemePair = $this->argument('theme');
 
-        if (!$themeName) {
-            $themeName = $this->ask('Theme group:theme');
+        if (!$groupThemePair) {
+            $groupThemePair = $this->ask('Theme vendor/theme');
 
-            if (!$themeName) {
-                return $this->error('Please enter group:theme');
+            if (!$groupThemePair) {
+                return $this->error('Please enter vendor/theme');
             }
         }
 
-        ThemeSupport::splitGroupTheme($themeName, $group, $theme);
+        $theme = ThemeManager::getTheme($groupThemePair);
 
-        if ($theme && $group) {
-            if (ThemeManager::getTheme($theme, $group)) {
-                if ($this->askConfirmation()) {
-                    $result = ThemeManager::deleteTheme($theme, $group);
+        if ($theme) {
+            if ($this->askConfirmation()) {
+                $result = $theme->delete();
 
-                    if ($result) {
-                        return $this->info("Theme \"{$group}:{$theme}\" deleted.");
-                    } else {
-                        return $this->info('Theme could not deleted.');
-                    }
+                if ($result) {
+                    return $this->info("Theme \"{$groupThemePair}\" deleted.");
                 }
             }
 
-            return $this->error("Requested theme \"{$group}:{$theme}\" not found.");
+            return $this->info('Theme could not deleted.');
         }
 
-        return $this->error('Please enter valid theme');
+        return $this->error("Requested theme \"{$groupThemePair}\" not found.");
     }
 
     private function askConfirmation()
@@ -84,9 +78,9 @@ class DeleteCommand extends Command
         if ($confirmation !== null) {
             if ($confirmation == 'yes') {
                 return true;
-            } else {
-                $this->warn('Canceled theme delete operation.');
             }
+
+            $this->warn('Canceled theme delete operation.');
 
             return false;
         } else {

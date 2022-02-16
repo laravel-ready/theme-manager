@@ -2,15 +2,20 @@
 
 namespace LaravelReady\ThemeManager\Services;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
 use LaravelReady\ThemeManager\Support\ThemeSupport;
+use LaravelReady\ThemeManager\Traits\CacheKeyTrait;
+use LaravelReady\ThemeManager\Services\Theme;
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
 class ThemeManager
 {
+    use CacheKeyTrait;
+
     public function __construct()
     {
         $rootFolder = Config::get('theme-manager.themes_root_folder');
@@ -34,7 +39,7 @@ class ThemeManager
 
         $themesRootFolder = Config::get('theme-manager.themes_root_folder');
 
-        return app('url')->asset("/{$themesRootFolder}/{$theme->group}/{$theme->alias}/{$asset}");
+        return app('url')->asset("/{$themesRootFolder}/{$theme->vendor}/{$theme->theme}/{$asset}");
     }
 
     /**
@@ -51,48 +56,52 @@ class ThemeManager
 
         $themesRootFolder = Config::get('theme-manager.themes_root_folder');
 
-        return base_path() . "/public/{$themesRootFolder}/{$theme->group}/{$theme->alias}/{$asset}";
+        return base_path() . "/public/{$themesRootFolder}/{$theme->vendor}/{$theme->theme}/{$asset}";
     }
 
     /**
      * Set current theme
      *
-     * @param string $themeAlias
-     * @param string $group
+     * @param string $themeAliases
      */
-    public static function setTheme(string $themeAlias, string $group = 'web'): mixed
+    public static function setTheme(string $themeAliases): null|Theme
     {
-        $theme = self::getTheme($themeAlias, $group);
+        $theme = self::getTheme($themeAliases);
 
-        Config::set('theme-manager.current_theme', $theme);
+        if ($theme) {
+            Config::set('theme-manager.current_theme', $theme);
+        }
 
         return $theme;
     }
 
     /**
-     * Get target theme
+     * Get target Theme:class item
      *
-     * @param string $themeAlias
-     * @param string $group
+     * @param string $themeAliases in vendor/theme format
      *
      * @throws ThemeManagerException
      *
      * @return mixed
      */
-    public static function getTheme(string $themeAlias, string $group = 'web'): mixed
+    public static function getTheme(string $themeAliases): null|Theme
     {
-        $cacheKey = 'theme-manager.themes';
-        $themes = Cache::get($cacheKey);
-        $group = trim($group);
+        $vendorTheme = ThemeSupport::parseThemeAliases($themeAliases, $vendor, $theme);
 
-        if ($themes && is_array($themes)) {
-            if (isset($themes[$group])) {
-                return collect($themes[$group])->first(function ($value) use ($themeAlias) {
-                    return $value->alias == $themeAlias;
+        if ($vendorTheme) {
+            $themes = Cache::get(self::$themesCacheKey);
+
+            if ($themes) {
+                $themeItem = $themes->first(function (Theme $themeItem) use ($vendor, $theme) {
+                    return $themeItem->vendor == $vendor && $themeItem->theme == $theme;
                 });
-            }
 
-            throw new ThemeManagerException("Requested theme group: \"{$group}\" not found.");
+                if ($themeItem) {
+                    return $themeItem;
+                }
+            } else {
+                throw new ThemeManagerException('There is no installed theme');
+            }
         }
 
         return null;
@@ -103,7 +112,7 @@ class ThemeManager
      *
      * @return mixed
      */
-    public static function getCurrentTheme(): mixed
+    public static function getCurrentTheme(): null|Theme
     {
         return Config::get('theme-manager.current_theme');
     }
@@ -111,72 +120,48 @@ class ThemeManager
     /**
      * Scan installed themes
      *
-     * @param bool $reScan
+     * @param bool $reScan or use reScanThemes()
      *
-     * @return array
+     * @return Collection
      */
-    public static function scanThemes(bool $reScan = false): array
+    public static function scanThemes(bool $reScan = false): Collection
     {
-        $cacheKey = 'theme-manager.themes';
-
         if ($reScan) {
-            Cache::forget($cacheKey);
+            Cache::forget(self::$themesCacheKey);
         }
 
-        return Cache::rememberForever($cacheKey, function () use ($cacheKey) {
+        return Cache::rememberForever(self::$themesCacheKey, function () {
             $themesRootFolder = Config::get('theme-manager.themes_root_folder');
             $themesBasePath = base_path() . "/{$themesRootFolder}";
 
             if (!File::exists($themesBasePath)) {
                 File::makeDirectory($themesBasePath);
+
+                return null;
             }
 
-            $themeGroups = new \DirectoryIterator($themesBasePath);
-
+            $vendors = new \DirectoryIterator($themesBasePath);
             $themeList = [];
 
-            // in theme groups
-            foreach ($themeGroups as $themeGroup) {
-                if ($themeGroup->isDir() && !$themeGroup->isDot()) {
-                    $themes = new \DirectoryIterator($themeGroup->getRealPath());
+            foreach ($vendors as $vendor) {
+                if ($vendor->isDir() && !$vendor->isDot()) {
+                    $themes = new \DirectoryIterator($vendor->getRealPath());
 
-                    // in group's themes
                     foreach ($themes as $theme) {
                         if ($theme->isDir() && !$theme->isDot()) {
-                            $themePath = $theme->getRealPath();
-                            $themeConfigFile = "{$themePath}/theme-configs.json";
-
-                            if (File::exists($themeConfigFile)) {
-                                $themeConfigs = json_decode(File::get($themeConfigFile));
-                                $themeConfigs->path = $themePath;
-                                $themeConfigs->views = "{$themePath}/views";
-
-                                $themeConfigs->preview = null;
-
-                                if (File::exists("{$themePath}/preview.png")) {
-                                    $themeConfigs->preview = "{$themePath}/preview.png";
-                                } else if (File::exists("{$themePath}/preview.jpg")) {
-                                    $themeConfigs->preview = "{$themePath}/preview.jpg";
-                                }
-
-                                if ($themeConfigs->preview) {
-                                    $themeConfigs->preview = base64_encode(File::get($themeConfigs->preview));
-                                } else {
-                                    $themeConfigs->preview_default = base64_encode(File::get(__DIR__ . '/../../resources/images/preview-default.jpg'));
-                                }
-
-                                $themeList[$themeGroup->getFilename()][] = $themeConfigs;
-                            }
+                            $themeList[] = ThemeSupport::getThemeConfigs($theme->getRealPath(), $vendor->getFilename());
                         }
                     }
                 }
             }
 
-            if (!count($themeList)) {
-                Cache::forget($cacheKey);
+            if (count($themeList)) {
+                return collect($themeList);
             }
 
-            return $themeList;
+            Cache::forget(self::$themesCacheKey);
+
+            return null;
         });
 
         return null;
@@ -185,9 +170,9 @@ class ThemeManager
     /**
      * Rescan themes
      *
-     * @return array
+     * @return Collection
      */
-    public static function reScanThemes(): array
+    public static function reScanThemes(): Collection
     {
         return self::scanThemes(true);
     }
@@ -250,109 +235,26 @@ class ThemeManager
     }
 
     /**
-     * Create new theme
-     *
-     * @param array $themeConfigs
-     *
-     * @return array
-     */
-    public static function createTheme(array $themeConfigs): array
-    {
-        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
-
-        $themeFolder = "{$themesFolder}/{$themeConfigs['group']}/{$themeConfigs['alias']}";
-        $themeTemplateFolder = __DIR__ . '/./../../resources/theme-template';
-
-        if (!File::exists($themeFolder)) {
-            File::makeDirectory($themeFolder, 0755, true);
-        } else {
-            return [
-                'result' => false,
-                'message' => "Theme folder already exists: {$themeConfigs['group']}:{$themeConfigs['alias']}"
-            ];
-        }
-
-        if (File::exists($themeFolder)) {
-            $isCopied = File::copyDirectory($themeTemplateFolder, $themeFolder);
-
-            if ($isCopied) {
-                $themeConfigFile = ThemeSupport::prettyJson($themeConfigs);
-
-                $result = File::put("{$themeFolder}/theme-configs.json", $themeConfigFile);
-
-                if (!$result) {
-                    return [
-                        'result' => false,
-                        'message' => 'Theme configs could not created.'
-                    ];
-                }
-            }
-
-            self::reScanThemes();
-
-            return [
-                'result' => true,
-                'message' => "Theme \"{$themeConfigs['group']}:{$themeConfigs['alias']}\" created successfully"
-            ];
-        }
-
-        return [
-            'result' => false,
-            'message' => 'Theme folder not found. Please try again.'
-        ];
-    }
-
-    /**
-     * Delete selected theme
-     *
-     * @param string $theme
-     * @param string $group
-     *
-     * @param bool
-     */
-    public static function deleteTheme(string $theme, string $group)
-    {
-        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
-
-        $themeFolder = "{$themesFolder}/{$group}/{$theme}";
-
-        if (File::exists($themeFolder)) {
-            return File::deleteDirectory($themeFolder);
-        }
-
-        return false;
-    }
-
-    /**
      * Set theme status
      *
      * After theme status updated rescans themes
      *
-     * @param string $theme
-     * @param string $group
+     * @param string $themeAliases
      * @param bool $status
      *
      * @param bool
      */
-    public static function setThemeStatus(string $theme, string $group, bool $status): bool
+    public static function setThemeStatus(string $themeAliases, bool $status): bool
     {
-        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
+        $themes = self::scanThemes();
 
-        $themeConfigsFile = "{$themesFolder}/{$group}/{$theme}/theme-configs.json";
+        if ($themes) {
+            $result = self::getTheme($themeAliases)?->updateStatus($status);
 
-        if (File::exists($themeConfigsFile)) {
-            $themeConfigs = json_decode(File::get($themeConfigsFile));
-
-            if ($themeConfigs) {
-                $themeConfigs->status = $status;
-
-                $result = File::put($themeConfigsFile, ThemeSupport::prettyJson($themeConfigs));
-
-                if ($result) {
-                    self::reScanThemes();
-
-                    return $result;
-                }
+            if ($result) {
+                self::reScanThemes();
+                
+                return true;
             }
         }
 
@@ -360,29 +262,22 @@ class ThemeManager
     }
 
     /**
-     * Set status to all themes
+     * Update all themes status
      *
-     * @param bool $thme
+     * @param bool $status
+     *
+     * @return bool
      */
     public static function setThemeStatusAll(bool $status): bool
     {
-        $themeGroups = self::reScanThemes();
-        $totalResult = true;
+        $themes = self::scanThemes();
 
-        if (count($themeGroups)) {
-            foreach ($themeGroups as $group => $themeGroup) {
-                foreach ($themeGroup as $theme) {
-                    $result = self::setThemeStatus($theme->alias, $group, $status);
-
-                    if (!$result) {
-                        $totalResult = $result;
-                    }
-                }
-            }
+        foreach ($themes as $theme) {
+            $theme->updateStatus($status);
         }
 
-        self::reScanThemes();
+        ThemeManager::reScanThemes();
 
-        return $totalResult;
+        return true;
     }
 }

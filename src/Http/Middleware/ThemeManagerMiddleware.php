@@ -11,17 +11,20 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 
 use LaravelReady\ThemeManager\Support\ThemeSupport;
+use LaravelReady\ThemeManager\Traits\CacheKeyTrait;
+use LaravelReady\ThemeManager\Services\Theme;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 use LaravelReady\ThemeManager\Exceptions\Theme\ThemeManagerException;
 
+
 class ThemeManagerMiddleware
 {
-    public function handle(Request $request, Closure $next, string $arg1 = null, string $arg2 = null, string $arg3 = null)
-    {
-        $cacheKey = 'theme-manager.themes';
+    use CacheKeyTrait;
 
-        if (!Cache::has($cacheKey) || !Cache::get($cacheKey)) {
-            ThemeManager::scanThemes(true);
+    public function handle(Request $request, Closure $next, string $arg1 = null, string $arg2 = null)
+    {
+        if (!Cache::has(self::$themesCacheKey) || !Cache::get(self::$themesCacheKey)) {
+            ThemeManager::reScanThemes();
         }
 
         $currentTheme = Config::get('theme-manager.current_theme');
@@ -34,25 +37,29 @@ class ThemeManagerMiddleware
 
             return $next($request);
         } else {
-            $args = ThemeSupport::handleArguments($arg1, $arg2, $arg3);
-            $theme = $args['theme'] ?? null;
-            $group = $args['group'] ?? null;
-            $restrictGroup = $args['restrict_group'] ?? null;
+            $args = ThemeSupport::handleArguments($arg1, $arg2);
 
-            $defaultTheme = Config::get('theme-manager.default_theme');
+            $themeAliases = $args['theme'] ?? null;
+            $vendor = $args['vendor'] ?? null;
 
             // check middleware theme
-            if ($theme && $group) {
-                $currentTheme = ThemeManager::setTheme($theme, $group);
+            if ($themeAliases) {
+                ThemeSupport::parseThemeAliases($themeAliases, $vendor, $theme);
 
-                if ($this->checkMiddlewareTheme($currentTheme, $restrictGroup, $defaultTheme)) {
-                    return $next($request);
+                if ($vendor && $theme) {
+                    $currentTheme = ThemeManager::setTheme($themeAliases);
+
+                    if ($currentTheme && $this->checkMiddlewareTheme($currentTheme)) {
+                        return $next($request);
+                    }
                 }
             }
 
+            $defaultTheme = Config::get('theme-manager.default_theme');
+
             // check default theme
-            if ($defaultTheme && $group) {
-                if ($this->checkDefaultTheme($defaultTheme, $group)) {
+            if ($defaultTheme && $vendor) {
+                if ($this->checkDefaultTheme($defaultTheme, $vendor)) {
                     return $next($request);
                 }
             }
@@ -65,28 +72,18 @@ class ThemeManagerMiddleware
      * Check and load middleware theme
      *
      * @param object $currentTheme
-     * @param string $restrictGroup
      * @param mixed $defaultTheme
      *
      * @return bool
      */
-    private function checkMiddlewareTheme(object $currentTheme, string|null $restrictGroup, mixed $defaultTheme)
+    private function checkMiddlewareTheme(Theme $currentTheme)
     {
         if ($currentTheme) {
             $this->checkThemeStatus($currentTheme);
 
-            if ($restrictGroup && $currentTheme->group !== $restrictGroup) {
-                throw new ThemeManagerException("This route resticted only theme group:
-                    \"{$restrictGroup}\", provided group: \"{$currentTheme->group}\"");
-            }
-
             View::addNamespace('theme', $currentTheme->views);
 
             return true;
-        }
-
-        if ($defaultTheme == null) {
-            throw new ThemeManagerException("Configured middleware theme \"{$currentTheme->group}:{$currentTheme->alias}\" could not found.");
         }
 
         return false;
@@ -95,39 +92,43 @@ class ThemeManagerMiddleware
     /**
      * Check and load default theme
      *
-     * @param string|array $defaultTheme
-     * @param string $group
+     * @param string|array $defaultThemeAliases
+     * @param string $vendor middleware specific theme vendor
      *
      * @return bool
      */
-    private function checkDefaultTheme(string|array $defaultTheme, string $group)
+    private function checkDefaultTheme(string|array $defaultThemeAliases, $vendor)
     {
-        $theme = null;
+        if (is_string($defaultThemeAliases)) {
+            $defaultThemeAliases = [$defaultThemeAliases];
+        }
 
-        if (is_string($defaultTheme)) {
-            ThemeSupport::splitGroupTheme($defaultTheme, $group, $theme);
-        } else if ($group && is_array($defaultTheme)) {
-            foreach ($defaultTheme as $themePair) {
-                if (Str::startsWith($themePair, "{$group}:")) {
-                    ThemeSupport::splitGroupTheme($themePair, $group, $theme);
+        $themeAliases = null;
 
-                    break;
-                }
+        foreach ($defaultThemeAliases as $themeAliases) {
+            if (Str::startsWith($themeAliases, "{$vendor}:")) {
+                $themeAliases = $themeAliases;
+
+                break;
             }
         }
 
-        if ($theme && $group) {
-            $currentTheme = ThemeManager::setTheme($theme, $group);
+        if ($themeAliases) {
+            $defaultTheme = ThemeManager::getTheme($themeAliases);
 
-            $this->checkThemeStatus($currentTheme);
+            if ($defaultTheme) {
+                $this->checkThemeStatus($defaultTheme);
 
-            if ($currentTheme) {
+                $currentTheme = ThemeManager::setTheme($themeAliases);
+
                 View::addNamespace('theme', $currentTheme->views);
 
                 return true;
             }
 
-            throw new ThemeManagerException("Configured default theme \"{$group}:{$theme}\" could not found.");
+            $themeAliases = implode(', ', $defaultThemeAliases);
+
+            throw new ThemeManagerException("Configured default theme \"{$themeAliases}\" could not found.");
         }
 
         return false;
@@ -136,11 +137,11 @@ class ThemeManagerMiddleware
     /**
      * Check theme is active
      *
-     * @param object $currentTheme
+     * @param object $theme
      */
-    private function checkThemeStatus(object $currentTheme)
+    private function checkThemeStatus(Theme $theme)
     {
-        if (!$currentTheme->status) {
+        if (!$theme->status) {
             throw new ThemeManagerException("Theme disabled.");
         }
     }
