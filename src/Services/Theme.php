@@ -2,9 +2,14 @@
 
 namespace LaravelReady\ThemeManager\Services;
 
+use PhpZip\ZipFile;
 use Illuminate\Support\Str;
+use PhpZip\Exception\ZipException;
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
+
+use PhpZip\Constants\ZipCompressionMethod;
 use LaravelReady\ThemeManager\Support\ThemeSupport;
 use LaravelReady\ThemeManager\Services\ThemeManager;
 
@@ -223,6 +228,55 @@ class Theme
                 if ($result) {
                     return $result;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Pack theme files
+     *
+     * @param bool
+     */
+    public function pack(): bool
+    {
+        $themesFolder = base_path(Config::get('theme-manager.themes_root_folder'));
+
+        $themeFolder = "{$themesFolder}/{$this->vendor}/{$this->theme}";
+        $themeZipOutputFile = "{$themesFolder}/{$this->vendor}/{$this->vendor}-{$this->theme}-{$this->version}.zip";
+
+        if (File::exists($themeFolder)) {
+
+            $zipFile = new ZipFile();
+
+            try{
+                $zipFile->addDir($themeFolder, '/', ZipCompressionMethod::DEFLATED);
+
+                $themeDir = new \DirectoryIterator($themeFolder);
+
+                if (File::exists($themeZipOutputFile)) {
+                    File::delete($themeZipOutputFile);
+                }
+
+                foreach ($themeDir as $dir) {
+                    if ($dir->isDir() && !$dir->isDot() && $dir->getFilename() !== 'vendor' && $dir->getFilename() !== 'node_modules') {
+                        $path = $dir->getRealPath();
+                        $folderName = $dir->getFilename();
+                        
+                        $zipFile->addDirRecursive($path, $folderName, ZipCompressionMethod::DEFLATED);
+                    }
+                }
+
+                $zipFile->saveAsFile($themeZipOutputFile)->close();
+
+                return File::exists($themeZipOutputFile);
+            }
+            catch(ZipException $exp){
+                return false;
+            }
+            finally{
+                $zipFile->close();
             }
         }
 

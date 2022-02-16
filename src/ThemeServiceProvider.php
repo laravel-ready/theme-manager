@@ -20,6 +20,7 @@ use LaravelReady\ThemeManager\Console\Commands\Theme\ListCommand;
 use LaravelReady\ThemeManager\Console\Commands\Theme\CreateCommand;
 use LaravelReady\ThemeManager\Console\Commands\Theme\DeleteCommand;
 use LaravelReady\ThemeManager\Console\Commands\Theme\StatusCommand;
+use LaravelReady\ThemeManager\Console\Commands\Theme\PackCommand;
 
 final class ThemeServiceProvider extends BaseServiceProvider
 {
@@ -129,7 +130,8 @@ final class ThemeServiceProvider extends BaseServiceProvider
                 ListCommand::class,
                 CreateCommand::class,
                 DeleteCommand::class,
-                StatusCommand::class
+                StatusCommand::class,
+                PackCommand::class
             ]);
         }
     }

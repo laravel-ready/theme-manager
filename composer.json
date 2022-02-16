@@ -20,7 +20,8 @@
     },
     "require": {
         "php": "^8.0",
-        "illuminate/support": "^8.0"
+        "illuminate/support": "^8.0",
+        "nelexa/zip": "^4.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.0",
