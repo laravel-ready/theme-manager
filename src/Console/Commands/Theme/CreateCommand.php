@@ -69,7 +69,7 @@ class CreateCommand extends Command
      */
     private function askGroup()
     {
-        $themeGroup = $this->ask('Theme Group (as slug. web, admin etc)');
+        $themeGroup = $this->ask('Theme Group: (as slug. web, admin etc)');
 
         $this->theme->setGroup($themeGroup);
     }
@@ -79,7 +79,7 @@ class CreateCommand extends Command
      */
     private function askVendor()
     {
-        $vendorSlug = $this->ask('Theme Vendor (as slug)');
+        $vendorSlug = $this->ask('Theme Vendor: (as slug)');
 
         if (!$vendorSlug) {
             $this->askVendor();
@@ -93,7 +93,7 @@ class CreateCommand extends Command
      */
     private function askThemeName()
     {
-        $themeName = $this->ask('Theme Name');
+        $themeName = $this->ask('Theme Name:');
 
         if (!$themeName) {
             $this->askThemeName();
@@ -108,7 +108,7 @@ class CreateCommand extends Command
      */
     private function askDescription()
     {
-        $description = $this->ask('Theme Description (optional)');
+        $description = $this->ask('Theme Description: /optional/');
 
         if (!empty($description)) {
             $this->theme->setDescription($description);
@@ -126,7 +126,7 @@ class CreateCommand extends Command
             $this->askAuthor();
         }
 
-        $authorContact = $this->ask('Author Contact Address or Email (optional)');
+        $authorContact = $this->ask('Author Contact: Address or Email /optional/');
 
         $this->theme->addAuthor($authorName, $authorContact);
     }

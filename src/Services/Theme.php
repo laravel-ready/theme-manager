@@ -191,7 +191,8 @@ class Theme
 
             return [
                 'result' => true,
-                'message' => "Theme \"{$themePairs}\" created successfully"
+                'message' => "Theme \"{$themePairs}\" created successfully for \"{$this->group}\".
+                    Please check your \"themes/{$themePairs}\" folder."
             ];
         }
 
@@ -263,7 +264,7 @@ class Theme
                     if ($dir->isDir() && !$dir->isDot() && $dir->getFilename() !== 'vendor' && $dir->getFilename() !== 'node_modules') {
                         $path = $dir->getRealPath();
                         $folderName = $dir->getFilename();
-                        
+
                         $zipFile->addDirRecursive($path, $folderName, ZipCompressionMethod::DEFLATED);
                     }
                 }

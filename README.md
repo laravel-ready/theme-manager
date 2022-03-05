@@ -22,6 +22,7 @@ Documentation and simple examples can be found **[here](https://laravel-ready.gi
 
 - [x] Add vendor support
 - [x] Add theme packing
+- [ ] Add custom theme source support
 - [ ] Add theme upload support
 - [ ] Add store support
 - [ ] Add CSS theme support
