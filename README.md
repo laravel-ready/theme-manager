@@ -32,7 +32,7 @@ Documentation and simple examples can be found **[here](https://laravel-ready.gi
 
 Logo: <a href="https://www.flaticon.com/free-icons/theme" title="theme icons">Theme icons created by Creatype - Flaticon</a>
 
-Default Theme Preview: Photo by <a href="https://unsplash.com/@jacksonsophat?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jackson So</a> on <a href="https://unsplash.com/s/photos/web-design?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+Default Theme Preview: <a href="https://unsplash.com/photos/_t-l5FFH8VA">Photo</a> by <a href="https://unsplash.com/@jacksonsophat?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Jackson So</a> on <a href="https://unsplash.com/s/photos/web-design?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 
 
 
